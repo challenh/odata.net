@@ -79,13 +79,13 @@ namespace Microsoft.OData.Core
         /// <param name="propertyName">The name of the property to validate.</param>
         /// <param name="owningStructuredType">The owning type of the property with name <paramref name="propertyName"/> 
         /// or null if no metadata is available.</param>
-        /// <param name="messageValidationSetting">The message validation setting, null: expects exception on missing property.</param>
+        /// <param name="throwOnMissingProperty">Whether throw exception on missing property.</param>
         /// <returns>The <see cref="IEdmProperty"/> instance representing the property with name <paramref name="propertyName"/> 
         /// or null if no metadata is available.</returns>
         internal static IEdmProperty ValidatePropertyDefined(
             string propertyName,
             IEdmStructuredType owningStructuredType,
-            IMessageValidationSetting messageValidationSetting)
+            bool throwOnMissingProperty = true)
         {
             Debug.Assert(!string.IsNullOrEmpty(propertyName), "!string.IsNullOrEmpty(propertyName)");
 
@@ -95,23 +95,11 @@ namespace Microsoft.OData.Core
             }
 
             IEdmProperty property = owningStructuredType.FindProperty(propertyName);
-            if ((messageValidationSetting == null)
-                || messageValidationSetting.NeedRunLegacyPropertyHandling())
+
+            // verify that the property is declared if the type is not an open type.
+            if (throwOnMissingProperty && !owningStructuredType.IsOpen && property == null)
             {
-                if (((messageValidationSetting == null) || messageValidationSetting.EnableFullValidation)
-                    && !owningStructuredType.IsOpen && property == null)
-                {
-                    throw new ODataException(Strings.ValidationUtils_PropertyDoesNotExistOnType(propertyName, owningStructuredType.FullTypeName()));
-                }
-            }
-            else
-            {
-                // verify that the property is declared if the type is not an open type.
-                if (((messageValidationSetting == null) || messageValidationSetting.ShouldThrowOnUndeclaredProperty())
-                    && !owningStructuredType.IsOpen && property == null)
-                {
-                    throw new ODataException(Strings.ValidationUtils_PropertyDoesNotExistOnType(propertyName, owningStructuredType.FullTypeName()));
-                }
+                throw new ODataException(Strings.ValidationUtils_PropertyDoesNotExistOnType(propertyName, owningStructuredType.FullTypeName()));
             }
 
             return property;
@@ -134,7 +122,7 @@ namespace Microsoft.OData.Core
                 return null;
             }
 
-            IEdmProperty property = ValidatePropertyDefined(propertyName, owningEntityType, null);
+            IEdmProperty property = ValidatePropertyDefined(propertyName, owningEntityType, true);
             if (property == null)
             {
                 // We don't support open navigation properties

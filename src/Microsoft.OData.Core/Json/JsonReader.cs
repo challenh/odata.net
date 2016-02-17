@@ -275,7 +275,7 @@ namespace Microsoft.OData.Core.Json
             if (this.characterBuffer[this.tokenStartIndex] == ',')
             {
                 commaFound = true;
-                this.TryAppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
+                this.AppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
                 this.tokenStartIndex++;
 
                 // Note that validity of the comma is verified below depending on the current scope.
@@ -309,7 +309,7 @@ namespace Microsoft.OData.Core.Json
 
                     // We expect a "value" - start array, start object or primitive value
                     this.nodeType = this.ParseValue(out RawValueTmp);
-                    this.TryAppendJsonRawValue(RawValueTmp);
+                    this.AppendJsonRawValue(RawValueTmp);
                     break;
 
                 case ScopeType.Array:
@@ -321,7 +321,7 @@ namespace Microsoft.OData.Core.Json
                     // We might see end of array here
                     if (this.characterBuffer[this.tokenStartIndex] == ']')
                     {
-                        this.TryAppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
+                        this.AppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
                         this.tokenStartIndex++;
 
                         // End of array is only valid when there was no comma before it.
@@ -342,7 +342,7 @@ namespace Microsoft.OData.Core.Json
 
                     // We expect element which is a "value" - start array, start object or primitive value
                     this.nodeType = this.ParseValue(out RawValueTmp);
-                    this.TryAppendJsonRawValue(RawValueTmp);
+                    this.AppendJsonRawValue(RawValueTmp);
                     break;
 
                 case ScopeType.Object:
@@ -354,7 +354,7 @@ namespace Microsoft.OData.Core.Json
                     // We might see end of object here
                     if (this.characterBuffer[this.tokenStartIndex] == '}')
                     {
-                        this.TryAppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
+                        this.AppendJsonRawValue(this.characterBuffer[this.tokenStartIndex]);
                         this.tokenStartIndex++;
 
                         // End of object is only valid when there was no comma before it.
@@ -376,7 +376,7 @@ namespace Microsoft.OData.Core.Json
 
                         // We expect a property here
                         this.nodeType = this.ParseProperty(out RawValueTmp);
-                        this.TryAppendJsonRawValue(RawValueTmp);
+                        this.AppendJsonRawValue(RawValueTmp);
                         break;
                     }
 
@@ -388,7 +388,7 @@ namespace Microsoft.OData.Core.Json
 
                     // We expect the property value, which is a "value" - start array, start object or primitive value
                     this.nodeType = this.ParseValue(out RawValueTmp);
-                    this.TryAppendJsonRawValue(RawValueTmp);
+                    this.AppendJsonRawValue(RawValueTmp);
                     break;
 
                 default:
@@ -410,7 +410,7 @@ namespace Microsoft.OData.Core.Json
         /// Appends current JSON raw string.
         /// </summary>
         /// <param name="rawValue">The string.</param>
-        private void TryAppendJsonRawValue(string rawValue)
+        private void AppendJsonRawValue(string rawValue)
         {
             this.nodeRawValue += rawValue;
         }
@@ -419,7 +419,7 @@ namespace Microsoft.OData.Core.Json
         /// Appends current JSON raw string.
         /// </summary>
         /// <param name="rawValue">The char.</param>
-        private void TryAppendJsonRawValue(char rawValue)
+        private void AppendJsonRawValue(char rawValue)
         {
             this.nodeRawValue += rawValue;
         }
@@ -468,14 +468,14 @@ namespace Microsoft.OData.Core.Json
                     // Start of object
                     this.PushScope(ScopeType.Object);
                     this.tokenStartIndex++;
-                    rawValue = currentCharacter.ToString();
+                    rawValue = "{";
                     return JsonNodeType.StartObject;
 
                 case '[':
                     // Start of array
                     this.PushScope(ScopeType.Array);
                     this.tokenStartIndex++;
-                    rawValue = currentCharacter.ToString();
+                    rawValue = "[";
                     return JsonNodeType.StartArray;
 
                 case '"':

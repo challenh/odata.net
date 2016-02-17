@@ -1298,7 +1298,7 @@ namespace Microsoft.OData.Core.JsonLight
                 // For any Property in OPEN complex / entity :
                 // Property name     Property value type     Deserialized result
                 // unknown     Known (including string/numeric)     Primitive/ODataValue
-                // unknown     Unknown(no/unrecognized odata.type)     ODataUntypedValue
+                // unknown     Unknown(no/unrecognized odata.type)     ODataUndeclaredPropertyValue
                 // known     inconsistent with model     Throw exception
                 bool insideComplexValue = false;
                 string outterPayloadTypeName = ValidateDataPropertyTypeNameAnnotation(entryState.DuplicatePropertyNamesChecker, propertyName);
@@ -1382,7 +1382,7 @@ namespace Microsoft.OData.Core.JsonLight
                 {
                     StringBuilder builder = new StringBuilder();
                     this.JsonReader.SkipValue(builder);
-                    propertyValue = new ODataUntypedValue()
+                    propertyValue = new ODataUndeclaredPropertyValue()
                     {
                         RawValue = builder.ToString()
                     };
@@ -1402,7 +1402,7 @@ namespace Microsoft.OData.Core.JsonLight
             {
                 ValidationUtils.ValidateOpenPropertyValue(propertyName, propertyValue);
                 ODataProperty property = AddEntryProperty(entryState, propertyName, propertyValue);
-                bool isTruelyUndeclaredPropertyInOpenEntity = (propertyValue is ODataUntypedValue);
+                bool isTruelyUndeclaredPropertyInOpenEntity = (propertyValue is ODataUndeclaredPropertyValue);
                 if (isTruelyUndeclaredPropertyInOpenEntity && (entryState.DuplicatePropertyNamesChecker != null))
                 {
                     TryAttachRawAnnotationSetToPropertyValue(entryState.DuplicatePropertyNamesChecker.AnnotationCollector, property);

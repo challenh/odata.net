@@ -632,7 +632,8 @@ namespace Microsoft.OData.Core
             /// <param name="jsonReader">The BufferingJsonReader.</param>
             /// <param name="propertyName">The property name.</param>
             /// <param name="annotationName">The annotation name.</param>
-            public void TryPeekAndCollectAnnotationRawValue(
+            /// <returns>True if peek and collect annotation raw value.</returns>
+            public bool TryPeekAndCollectAnnotationRawValue(
                 BufferingJsonReader jsonReader,
                 string propertyName,
                 string annotationName)
@@ -640,7 +641,10 @@ namespace Microsoft.OData.Core
                 if (this.shouldCollectAnnotation)
                 {
                     this.PeekAndCollectAnnotationRawValue(jsonReader, propertyName, annotationName);
+                    return true;
                 }
+
+                return false;
             }
 
             /// <summary>
@@ -649,12 +653,16 @@ namespace Microsoft.OData.Core
             /// <param name="propertyName">The property name.</param>
             /// <param name="annotationName">The annotation name.</param>
             /// <param name="rawValue">The raw json string.</param>
-            public void TryAddPropertyAnnotationRawValue(string propertyName, string annotationName, string rawValue)
+            /// <returns>True if add property's annotation raw value.</returns>
+            public bool TryAddPropertyAnnotationRawValue(string propertyName, string annotationName, string rawValue)
             {
                 if (this.shouldCollectAnnotation)
                 {
                     this.AddPropertyAnnotationRawValue(propertyName, annotationName, rawValue);
+                    return true;
                 }
+
+                return false;
             }
 
             /// <summary>

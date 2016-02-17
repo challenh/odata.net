@@ -69,7 +69,7 @@ namespace Microsoft.OData.Client
                 // DsContxt.UndeclaredPropertyBehavior    DsContxt.IgnoreMissingProperty    ODL behavior ODL UndeclaredPropertyBehaviorKinds    Materializer behavior
                 // .None (let IgnoreMissingProperty decide)    True    Read&write    .SupportUndeclaredValueProperty    Silently ignore
                 // .None (let IgnoreMissingProperty decide)    False    Throw exception    .None    Throw exception
-                // .Ignore    ignore    .IgnoreUndeclaredValueProperty    Silently ignore
+                // .Ignore    ignore    .DiscardUndeclaredValueProperty    Silently ignore
                 // .Support    Read&write    .SupportUndeclaredValueProperty    Silently ignore
                 if (this.Context.UndeclaredPropertyBehavior == UndeclaredPropertyBehavior.None)
                 {
@@ -98,6 +98,8 @@ namespace Microsoft.OData.Client
             {
                 return this.UndeclaredPropertyBehaviorKinds.HasFlag(
                             ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty)
+                    || this.UndeclaredPropertyBehaviorKinds.HasFlag(
+                            ODataUndeclaredPropertyBehaviorKinds.DiscardUndeclaredValueProperty)
                     || this.UndeclaredPropertyBehaviorKinds.HasFlag(
                             ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty);
             }

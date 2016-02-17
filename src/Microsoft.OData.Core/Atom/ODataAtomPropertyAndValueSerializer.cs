@@ -516,7 +516,9 @@ namespace Microsoft.OData.Core.Atom
 
             WriterValidationUtils.ValidatePropertyName(propertyName);
             duplicatePropertyNamesChecker.CheckForDuplicatePropertyNames(property);
-            IEdmProperty edmProperty = WriterValidationUtils.ValidatePropertyDefined(propertyName, owningType, this.MessageWriterSettings);
+            bool throwOnMissingProperty = this.MessageWriterSettings.NeedRunLegacyPropertyHandling()
+                || this.MessageWriterSettings.ShouldThrowOnUndeclaredProperty();
+            IEdmProperty edmProperty = WriterValidationUtils.ValidatePropertyDefined(propertyName, owningType, throwOnMissingProperty);
             IEdmTypeReference propertyTypeReference = edmProperty == null ? null : edmProperty.Type;
 
             if (value is ODataStreamReferenceValue)
