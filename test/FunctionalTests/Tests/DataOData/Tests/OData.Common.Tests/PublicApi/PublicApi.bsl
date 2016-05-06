@@ -3858,6 +3858,7 @@ public enum Microsoft.OData.ODataUndeclaredPropertyBehaviorKinds : int {
 	IgnoreUndeclaredValueProperty = 1
 	None = 0
 	ReportUndeclaredLinkProperty = 2
+	SupportUndeclaredValueProperty = 4
 }
 
 public enum Microsoft.OData.ODataVersion : int {
@@ -4739,19 +4740,19 @@ public sealed class Microsoft.OData.ODataMessageReader : IDisposable {
 	public System.Threading.Tasks.Task`1[[System.Object]] ReadValueAsync (Microsoft.OData.Edm.IEdmTypeReference expectedTypeReference)
 }
 
-public sealed class Microsoft.OData.ODataMessageReaderSettings : Microsoft.OData.ODataMessageReaderSettingsBase {
+public sealed class Microsoft.OData.ODataMessageReaderSettings : Microsoft.OData.ODataMessageReaderSettingsBase, IMessageValidationSetting {
 	public ODataMessageReaderSettings ()
 	public ODataMessageReaderSettings (Microsoft.OData.ODataMessageReaderSettings other)
 
 	System.Uri BaseUri  { public get; public set; }
 	bool DisableMessageStreamDisposal  { public get; public set; }
 	bool DisablePrimitiveTypeConversion  { public get; public set; }
-	bool EnableFullValidation  { public get; public set; }
+	bool EnableFullValidation  { public virtual get; public virtual set; }
 	Microsoft.OData.ODataVersion MaxProtocolVersion  { public get; public set; }
 	Microsoft.OData.ODataMediaTypeResolver MediaTypeResolver  { public get; public set; }
 	bool ODataSimplified  { public get; public set; }
 	System.Uri PayloadBaseUri  { public get; public set; }
-	Microsoft.OData.ODataUndeclaredPropertyBehaviorKinds UndeclaredPropertyBehaviorKinds  { public get; public set; }
+	Microsoft.OData.ODataUndeclaredPropertyBehaviorKinds UndeclaredPropertyBehaviorKinds  { public virtual get; public virtual set; }
 	System.Nullable`1[[System.Boolean]] UseKeyAsSegment  { public get; public set; }
 
 	public void EnableDefaultBehavior ()
@@ -4807,18 +4808,19 @@ public sealed class Microsoft.OData.ODataMessageWriter : IDisposable {
 	public System.Threading.Tasks.Task WriteValueAsync (object value)
 }
 
-public sealed class Microsoft.OData.ODataMessageWriterSettings : Microsoft.OData.ODataMessageWriterSettingsBase {
+public sealed class Microsoft.OData.ODataMessageWriterSettings : Microsoft.OData.ODataMessageWriterSettingsBase, IMessageValidationSetting {
 	public ODataMessageWriterSettings ()
 	public ODataMessageWriterSettings (Microsoft.OData.ODataMessageWriterSettings other)
 
 	bool AutoComputePayloadMetadataInJson  { public get; public set; }
 	bool DisableMessageStreamDisposal  { public get; public set; }
-	bool EnableFullValidation  { public get; public set; }
+	bool EnableFullValidation  { public virtual get; public virtual set; }
 	string JsonPCallback  { public get; public set; }
 	Microsoft.OData.ODataMediaTypeResolver MediaTypeResolver  { public get; public set; }
 	bool ODataSimplified  { public get; public set; }
 	Microsoft.OData.ODataUri ODataUri  { public get; public set; }
 	System.Uri PayloadBaseUri  { public get; public set; }
+	Microsoft.OData.ODataUndeclaredPropertyBehaviorKinds UndeclaredPropertyBehaviorKinds  { public virtual get; public virtual set; }
 	System.Nullable`1[[System.Boolean]] UseKeyAsSegment  { public get; public set; }
 	System.Nullable`1[[Microsoft.OData.ODataVersion]] Version  { public get; public set; }
 

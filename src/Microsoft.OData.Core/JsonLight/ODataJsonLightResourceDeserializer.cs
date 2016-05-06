@@ -1360,7 +1360,7 @@ namespace Microsoft.OData.JsonLight
                     // If the property is expanded, ignore the content if we're asked to do so.
                     if (propertyWithValue)
                     {
-                        if (!this.MessageReaderSettings.IgnoreUndeclaredValueProperties)
+                        if (this.MessageReaderSettings.ShouldThrowOnUndeclaredProperty())
                         {
                             throw new ODataException(ODataErrorStrings.ValidationUtils_PropertyDoesNotExistOnType(propertyName, resourceState.EntityType.FullTypeName()));
                         }
@@ -1415,7 +1415,7 @@ namespace Microsoft.OData.JsonLight
             }
 
             // Property with value can only be ignored if we're asked to do so.
-            if (!this.MessageReaderSettings.IgnoreUndeclaredValueProperties)
+            if (this.MessageReaderSettings.ShouldThrowOnUndeclaredProperty())
             {
                 throw new ODataException(ODataErrorStrings.ValidationUtils_PropertyDoesNotExistOnType(propertyName, resourceState.EntityType.FullTypeName()));
             }

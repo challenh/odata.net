@@ -15,7 +15,7 @@ namespace Microsoft.OData
     /// <summary>
     /// Configuration settings for OData message writers.
     /// </summary>
-    public sealed class ODataMessageWriterSettings : ODataMessageWriterSettingsBase
+    public sealed class ODataMessageWriterSettings : ODataMessageWriterSettingsBase, IMessageValidationSetting
     {
         /// <summary>
         /// The acceptable charsets used to the determine the encoding of the message.
@@ -96,6 +96,7 @@ namespace Microsoft.OData
             this.shouldIncludeAnnotation = other.shouldIncludeAnnotation;
             this.AutoComputePayloadMetadataInJson = other.AutoComputePayloadMetadataInJson;
             this.UseKeyAsSegment = other.UseKeyAsSegment;
+            this.UndeclaredPropertyBehaviorKinds = other.UndeclaredPropertyBehaviorKinds;
             this.ODataUri = other.ODataUri;
 
             // NOTE: writer behavior is immutable; copy by reference is ok.
@@ -136,6 +137,15 @@ namespace Microsoft.OData
         {
             get { return this.odataUri ?? (this.odataUri = new ODataUri()); }
             set { this.odataUri = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets UndeclaredPropertyBehaviorKinds.
+        /// </summary>
+        public ODataUndeclaredPropertyBehaviorKinds UndeclaredPropertyBehaviorKinds
+        {
+            get;
+            set;
         }
 
         /// <summary>Gets or sets a value that indicates whether the message stream will not be disposed after finishing writing with the message.</summary>
