@@ -347,7 +347,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             ODataResource entry = this.ReadSingleton(payload);
 
             entry.Properties.Count().Should().Be(3);
-            entry.Properties.Single(p => p.Name == "OpenType2").Value.Should().Be("BlaBla");
+            entry.Properties.Single(p => p.Name == "OpenType2").Value.As<ODataUntypedPrimitiveValue>().Value.Should().Be("BlaBla");
         }
 
         private void OpenTypeTestSetting()

@@ -9,7 +9,7 @@ namespace Microsoft.OData
     /// <summary>
     /// OData representation of an untyped value.
     /// </summary>
-    public sealed class ODataUntypedValue : ODataValue
+    public class ODataUntypedValue : ODataValue
     {
         /// <summary>Gets or sets the raw untyped value.</summary>
         /// <returns>The raw untyped value.</returns>

@@ -178,7 +178,7 @@ namespace Microsoft.Test.OData.Tests.Client.ODataWCFServiceTests
                 {
                     entry = new QueryEntryHelper(this) { RequestUri = string.Format("People('{0}')", userNames[i]), MimeType = mimeTypes[i], IfMatch = "*" }.Execute();
                     var nickName = entry.Properties.Single(p => p.Name == "NickName").Value;
-                    Assert.AreEqual("NickName", entry.Properties.Single(p => p.Name == "NickName").Value);
+                    Assert.AreEqual("NickName", (entry.Properties.Single(p => p.Name == "NickName").Value as ODataUntypedPrimitiveValue).Value);
                 }
             }
         }
@@ -227,7 +227,7 @@ namespace Microsoft.Test.OData.Tests.Client.ODataWCFServiceTests
                 {
                     var entry = new QueryEntryHelper(this) { RequestUri = string.Format("People('russellwhyte')/Trips(0)/PlanItems(12)/{0}Event", NameSpacePrefix), MimeType = mimeTypes[i], IfMatch = "*" }.Execute();
                     var updatedAddress = entry.Properties.Single(p => p.Name == "OccursAt").Value;
-                    Assert.AreEqual(100 + i, (updatedAddress as ODataComplexValue).Properties.Single(p => p.Name == "RoomNumber").Value);
+                    Assert.AreEqual(100 + i, ((updatedAddress as ODataComplexValue).Properties.Single(p => p.Name == "RoomNumber").Value as ODataUntypedPrimitiveValue).Value);
                 }
             }
         }

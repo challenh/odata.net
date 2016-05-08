@@ -21,16 +21,6 @@ namespace Microsoft.OData
         None = 0,
 
         /// <summary>
-        /// The reader will skip reading the property if it's not declared by the model and the current type is not open.
-        /// </summary>
-        /// <remarks>
-        /// This flag can only be used when reading responses.
-        /// All information about the undeclared property is going to be ignored, so for example ATOM metadata related to that property
-        /// will not be reported either.
-        /// </remarks>
-        IgnoreUndeclaredValueProperty = 1,
-
-        /// <summary>
         /// The reader will read and report link properties which are not declared by the model.
         /// </summary>
         /// <remarks>

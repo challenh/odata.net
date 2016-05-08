@@ -127,6 +127,9 @@
     <Compile Include="$(ODataCrossTargettingSourcePath)\ExceptionUtils.cs">
       <Link>Microsoft\OData\Core\ExceptionUtils.cs</Link>
     </Compile>
+    <Compile Include="$(ODataCrossTargettingSourcePath)\ODataUntypedPrimitiveValue.cs">
+      <Link>Microsoft\OData\Core\ODataUntypedPrimitiveValue.cs</Link>
+    </Compile>
     <Compile Include="$(ODataCrossTargettingSourcePath)\ResourceSetWithoutExpectedTypeValidator.cs">
       <Link>Microsoft\OData\Core\ResourceSetWithoutExpectedTypeValidator.cs</Link>
     </Compile>

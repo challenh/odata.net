@@ -26,7 +26,7 @@ namespace Microsoft.OData.Tests
             Assert.False(settings.DisablePrimitiveTypeConversion, "DisablePrimitiveTypeConversion should be false by default.");
             Assert.False(settings.DisableMessageStreamDisposal, "DisableMessageStreamDisposal should be false by default.");
             Assert.False(settings.EnableAtomMetadataReading, "EnableAtomMetadataReading should be false by default.");
-            Assert.True(ODataUndeclaredPropertyBehaviorKinds.None == settings.UndeclaredPropertyBehaviorKinds, "UndeclaredPropertyBehaviorKinds should be Default by default.");
+            Assert.True(ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty == settings.UndeclaredPropertyBehaviorKinds, "UndeclaredPropertyBehaviorKinds should be Default by default.");
             Assert.True(ODataVersion.V4 == settings.MaxProtocolVersion, "MaxProtocolVersion should be V3.");
             Assert.True(100 == settings.MessageQuotas.MaxPartsPerBatch, "MaxPartsPerBatch should be int.MaxValue.");
             Assert.True(1000 == settings.MessageQuotas.MaxOperationsPerChangeset, "MaxOperationsPerChangeset should be int.MaxValue.");
@@ -47,7 +47,7 @@ namespace Microsoft.OData.Tests
                 DisablePrimitiveTypeConversion = true,
                 DisableMessageStreamDisposal = true,
                 EnableAtomMetadataReading = true,
-                UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty,
+                UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty,
                 MaxProtocolVersion = ODataVersion.V4,
                 MessageQuotas = new ODataMessageQuotas
                 {
@@ -63,7 +63,7 @@ namespace Microsoft.OData.Tests
             Assert.True(settings.DisablePrimitiveTypeConversion, "DisablePrimitiveTypeConversion was not correctly remembered.");
             Assert.True(settings.DisableMessageStreamDisposal, "DisableMessageStreamDisposal was not correctly remembered.");
             Assert.True(settings.EnableAtomMetadataReading, "EnableAtomMetadataReading was not correctly remembered.");
-            Assert.True(ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty == settings.UndeclaredPropertyBehaviorKinds, "UndeclaredPropertyBehaviorKinds was not correctly remembered.");
+            Assert.True(ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty == settings.UndeclaredPropertyBehaviorKinds, "UndeclaredPropertyBehaviorKinds was not correctly remembered.");
             Assert.True(ODataVersion.V4 == settings.MaxProtocolVersion, "The MaxProtocolVersion was not correctly remembered.");
             Assert.True(2 == settings.MessageQuotas.MaxPartsPerBatch, "MaxPartsPerBatch should be 2");
             Assert.True(3 == settings.MessageQuotas.MaxOperationsPerChangeset, "MaxOperationsPerChangeset should be 3");
@@ -107,7 +107,7 @@ namespace Microsoft.OData.Tests
             // Compare original and settings created from copy constructor after setting rest of the values 
             settings.DisableMessageStreamDisposal = true;
             settings.EnableAtomMetadataReading = true;
-            settings.UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.ReportUndeclaredLinkProperty | ODataUndeclaredPropertyBehaviorKinds.IgnoreUndeclaredValueProperty;
+            settings.UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.ReportUndeclaredLinkProperty | ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty;
             settings.MaxProtocolVersion = ODataVersion.V4;
             settings.MessageQuotas.MaxPartsPerBatch = 100;
             settings.MessageQuotas.MaxOperationsPerChangeset = 200;

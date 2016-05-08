@@ -1003,7 +1003,7 @@ namespace Microsoft.Test.Taupo.OData.Reader.Tests
 
             object resultTmp = ODataUriUtils.ConvertFromUriLiteral(text, ODataVersion.V4, edmModel, null /*typeReference*/);
             resultTmp.As<ODataComplexValue>().TypeName.Should().Be(null);
-            resultTmp.As<ODataComplexValue>().Properties.Should().OnlyContain(p => p.Name == "numberProperty" && p.Value.Equals(42));
+            resultTmp.As<ODataComplexValue>().Properties.Should().OnlyContain(p => p.Name == "numberProperty" && (int)((p.Value as ODataUntypedPrimitiveValue).Value) == 42);
         }
 
         [TestMethod, TestCategory("Reader.UriHandling"), Variation]

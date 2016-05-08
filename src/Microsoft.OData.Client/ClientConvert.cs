@@ -109,7 +109,7 @@ namespace Microsoft.OData.Client
                 }
             }
         }
-        
+
         /// <summary>
         /// Convert from primitive value to an xml payload string. 
         /// </summary>
@@ -123,6 +123,12 @@ namespace Microsoft.OData.Client
             if (PrimitiveType.TryGetPrimitiveType(propertyValue.GetType(), out primitiveType) && primitiveType.TypeConverter != null)
             {
                 return primitiveType.TypeConverter.ToString(propertyValue);
+            }
+
+            ODataUntypedPrimitiveValue untypedPrimiveVal = propertyValue as ODataUntypedPrimitiveValue;
+            if (untypedPrimiveVal != null)
+            {
+                return ToString(untypedPrimiveVal.Value);
             }
 
             Debug.Assert(false, "new StorageType without update to knownTypes");

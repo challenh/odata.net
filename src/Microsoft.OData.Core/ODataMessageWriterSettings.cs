@@ -76,6 +76,7 @@ namespace Microsoft.OData
             // Create the default writer behavior
             this.writerBehavior = ODataWriterBehavior.DefaultBehavior;
             this.EnableFullValidation = true;
+            this.UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty;
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:Microsoft.OData.ODataMessageWriterSettings" /> class with specified settings.</summary>

@@ -179,6 +179,18 @@ namespace Microsoft.Test.Taupo.OData.Common
                 return;
             }
 
+            if (objectModelItem is ODataUntypedPrimitiveValue)
+            {
+                this.VisitPrimitiveValue((objectModelItem as ODataUntypedPrimitiveValue).Value);
+                return;
+            }
+
+            if (objectModelItem is ODataUntypedValue)
+            {
+                this.VisitPrimitiveValue((objectModelItem as ODataUntypedValue).RawValue);
+                return;
+            }
+
             this.VisitUnsupportedValue(objectModelItem);
         }
 
@@ -380,7 +392,7 @@ namespace Microsoft.Test.Taupo.OData.Common
         protected virtual void VisitEntitySet(ODataEntitySetInfo entitySetInfo)
         {
         }
-        
+
         /// <summary>
         /// Visits an entity reference link collection.
         /// </summary>
@@ -404,7 +416,7 @@ namespace Microsoft.Test.Taupo.OData.Common
         protected virtual void VisitEntityReferenceLink(ODataEntityReferenceLink entityReferenceLink)
         {
         }
-        
+
         /// <summary>
         /// Visits a stream reference value (named stream).
         /// </summary>

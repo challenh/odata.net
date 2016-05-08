@@ -86,6 +86,7 @@
     <Compile Include="Evaluation\ODataUriBuilder.cs" />
     <Compile Include="Evaluation\UrlConvention.cs" />
     <Compile Include="ExceptionUtils.cs" />
+    <Compile Include="ODataUntypedPrimitiveValue.cs" />
     <Compile Include="ResourceSetWithoutExpectedTypeValidator.cs" />
     <Compile Include="GeographyTypeConverter.cs" />
     <Compile Include="GeometryTypeConverter.cs" />

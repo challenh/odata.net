@@ -36,7 +36,7 @@ namespace Microsoft.OData
         {
             this.DisablePrimitiveTypeConversion = false;
             this.DisableMessageStreamDisposal = false;
-            this.UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.None;
+            this.UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty;
 
             // Create the default reader behavior
             this.readerBehavior = ODataReaderBehavior.DefaultBehavior;
@@ -140,24 +140,6 @@ namespace Microsoft.OData
         ///       - The property has 'odata.mediaEditLink', 'odata.mediaReadLink', 'odata.mediaContentType' or 'odata.mediaEtag' on it and no value
         ///             - it will be read as a stream property.
         ///       - Any other property (that is property with a value or property with no annotation mentioned above) will fail.
-        ///
-        /// ODataUndeclaredPropertyBehaviorKind.IgnoreUndeclaredValueProperty
-        ///   ATOM
-        ///     - Undeclared property inside m:properties is ignored (not even read).
-        ///     - Undeclared nested resource info, stream property link or association link fail.
-        ///   Verbose JSON
-        ///     - If an undeclared property is found a detection logic will run:
-        ///       - __deferred value is found - fail as undeclared deferred nav. link.
-        ///       - __mediaresource value is found - fail as undeclared stream property.
-        ///       - All other properties are ignored and not read.
-        ///     - Undeclared association links inside __metadata/properties fail.
-        ///   JSON Light
-        ///     - If an undeclared property is found a detection logic will run:
-        ///       - The property has 'odata.navigationLink' or 'odata.associationLink' annotation on it (deferred or expanded nested resource info)
-        ///             - fail as undeclared navigation property
-        ///       - The property has 'odata.mediaEditLink', 'odata.mediaReadLink', 'odata.mediaContentType' or 'odata.mediaEtag' on it and no value
-        ///             - fail as undeclared stream property.
-        ///       - The property has a value and no annotation mentioned above - the property is ignored and not read.
         ///
         /// ODataUndeclaredPropertyBehaviorKind.ReportUndeclaredLinkProperty | ODataUndeclaredPropertyBehaviorKind.IgnoreUndeclaredValueProperty
         ///   ATOM

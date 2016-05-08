@@ -263,7 +263,7 @@ namespace Microsoft.OData.Tests.JsonLight
             pair.Value.Count().Should().Be(1);
             var entry = pair.Value.First();
             entry.Properties.Count().Should().Be(2);
-            entry.Properties.ElementAt(1).Value.Should().Be("DynamicValue");
+            entry.Properties.ElementAt(1).Value.As<ODataUntypedPrimitiveValue>().Value.Should().Be("DynamicValue");
         }
 
         [Fact]

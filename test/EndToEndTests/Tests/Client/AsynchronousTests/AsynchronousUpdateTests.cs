@@ -228,7 +228,7 @@ namespace Microsoft.Test.OData.Tests.Client.AsynchronousTests
             var context = this.CreateWrappedContext<DefaultContainer>().Context;
             context.BaseUri = this.ServiceUri;
             context.AddAndUpdateResponsePreference = DataServiceResponsePreference.None;
-            context.IgnoreMissingProperties = true;
+            ///context.UndeclaredPropertyBehavior = UndeclaredPropertyBehavior.Support;
             context.IgnoreResourceNotFoundException = true;
             context.MergeOption = MergeOption.OverwriteChanges;
             Customer c1 = new Customer { CustomerId = 1004 };
@@ -307,7 +307,7 @@ namespace Microsoft.Test.OData.Tests.Client.AsynchronousTests
             var context = this.CreateWrappedContext<DefaultContainer>().Context;
             context.BaseUri = this.ServiceUri;
             context.AddAndUpdateResponsePreference = DataServiceResponsePreference.None;
-            context.IgnoreMissingProperties = true;
+            ///context.UndeclaredPropertyBehavior = UndeclaredPropertyBehavior.Support;
             context.IgnoreResourceNotFoundException = true;
             context.MergeOption = MergeOption.OverwriteChanges;
             Employee e1 = new Employee {PersonId = 3000};
@@ -348,7 +348,7 @@ namespace Microsoft.Test.OData.Tests.Client.AsynchronousTests
             var context = this.CreateWrappedContext<DefaultContainer>().Context;
             context.BaseUri = this.ServiceUri;
             context.AddAndUpdateResponsePreference = DataServiceResponsePreference.None;
-            context.IgnoreMissingProperties = true;
+            ///context.UndeclaredPropertyBehavior = UndeclaredPropertyBehavior.Support;
             context.IgnoreResourceNotFoundException = true;
             context.MergeOption = MergeOption.OverwriteChanges;
 

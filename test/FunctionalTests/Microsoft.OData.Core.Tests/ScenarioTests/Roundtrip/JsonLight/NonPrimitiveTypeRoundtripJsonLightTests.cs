@@ -179,7 +179,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Roundtrip.JsonLight
             var properties = new[] { new ODataProperty { Name = propertyName, Value = value } };
             var entry = new ODataResource() { TypeName = "NS.Student", Properties = properties };
 
-            ODataMessageWriterSettings settings = new ODataMessageWriterSettings { Version = ODataVersion.V4 };
+            ODataMessageWriterSettings settings = new ODataMessageWriterSettings { Version = ODataVersion.V4, UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty };
             MemoryStream stream = new MemoryStream();
 
             using (ODataJsonLightOutputContext outputContext = new ODataJsonLightOutputContext(

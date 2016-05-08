@@ -409,7 +409,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
 
             var address = entry.Properties.FirstOrDefault(s => string.Equals(s.Name, "Address", StringComparison.OrdinalIgnoreCase)).Value as ODataComplexValue;
             address.Properties.FirstOrDefault(s => string.Equals(s.Name, "CountryRegion", StringComparison.OrdinalIgnoreCase)).Value.ShouldBeEquivalentTo("China", "value should be in correct type.");
-            address.Properties.FirstOrDefault(s => string.Equals(s.Name, "City", StringComparison.OrdinalIgnoreCase)).Value.ShouldBeEquivalentTo("Shanghai", "value should be in correct type.");
+            address.Properties.FirstOrDefault(s => string.Equals(s.Name, "City", StringComparison.OrdinalIgnoreCase)).Value.As<ODataUntypedValue>().RawValue.ShouldBeEquivalentTo("\"Shanghai\"", "value should be in correct type.");
         }
 
         [Fact]
@@ -839,7 +839,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             model.AddElement(entityType);
             entityType.AddStructuralProperty("Id", EdmPrimitiveTypeKind.Int32);
             entityType.AddStructuralProperty("Birthday", EdmPrimitiveTypeKind.DateTimeOffset);
-        
+
             EdmEntityContainer container = new EdmEntityContainer("EntityNs", "MyContainer");
             EdmEntitySet entitySet = container.AddEntitySet("People", entityType);
             model.AddElement(container);
@@ -871,7 +871,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 ? "application/json;odata.metadata=minimal;IEEE754Compatible=true"
                 : "application/json;odata.metadata=minimal;IEEE754Compatible=false";
             message.SetHeader("Content-Type", contentType);
-            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false };
+            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false, UndeclaredPropertyBehaviorKinds = ODataUndeclaredPropertyBehaviorKinds.SupportUndeclaredValueProperty };
             using (var msgReader = new ODataMessageReader((IODataResponseMessage)message, readerSettings, userModel))
             {
                 var reader = msgReader.CreateODataResourceReader(entitySet, entityType);

@@ -62,7 +62,7 @@ namespace Microsoft.Test.OData.PluggableFormat.VCard
                     @params += ";" + anns.Name.Substring(6) /*VCARD.*/ + "=" + ((ODataPrimitiveValue)anns.Value).Value;
                 }
 
-                this.writer.WriteItem(null, name, @params, (string)prop.Value);
+                this.writer.WriteItem(null, name, @params, (prop.Value as string) ?? (prop.Value as ODataUntypedPrimitiveValue).Value as string);
             }
 
             this.writer.WriteEnd();

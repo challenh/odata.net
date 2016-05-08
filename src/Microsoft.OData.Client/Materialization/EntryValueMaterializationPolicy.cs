@@ -15,7 +15,7 @@ namespace Microsoft.OData.Client.Materialization
     using Microsoft.OData.Client;
     using Microsoft.OData.Client.Metadata;
     using DSClient = Microsoft.OData.Client;
-    
+
     /// <summary>
     /// Used to materialize entities from an <see cref="ODataResource"/> to an object.
     /// </summary>
@@ -32,9 +32,9 @@ namespace Microsoft.OData.Client.Materialization
         /// <param name="lazyPrimitivePropertyConverter">The lazy primitive property converter.</param>
         /// <param name="nextLinkTable">The next link table.</param>
         internal EntryValueMaterializationPolicy(
-            IODataMaterializerContext context, 
-            EntityTrackingAdapter entityTrackingAdapter, 
-            DSClient.SimpleLazy<PrimitivePropertyConverter> lazyPrimitivePropertyConverter, 
+            IODataMaterializerContext context,
+            EntityTrackingAdapter entityTrackingAdapter,
+            DSClient.SimpleLazy<PrimitivePropertyConverter> lazyPrimitivePropertyConverter,
             Dictionary<IEnumerable, DataServiceQueryContinuation> nextLinkTable)
             : base(context, lazyPrimitivePropertyConverter)
         {
@@ -232,7 +232,7 @@ namespace Microsoft.OData.Client.Materialization
             object collection = this.PopulateCollectionProperty(entry, property, itemsEnumerable, nextLink, continuationPlan);
 
             // Get collection of all non-linked elements in collection and remove them except for the ones that were obtained from the response.
-            if (this.EntityTrackingAdapter.MergeOption == MergeOption.OverwriteChanges || 
+            if (this.EntityTrackingAdapter.MergeOption == MergeOption.OverwriteChanges ||
                 this.EntityTrackingAdapter.MergeOption == MergeOption.PreserveChanges)
             {
                 var linkedItemsInCollection =
@@ -258,7 +258,7 @@ namespace Microsoft.OData.Client.Materialization
                 if (!isContinuation)
                 {
                     IEnumerable<object> itemsToRemove;
-                    
+
                     if (this.EntityTrackingAdapter.MergeOption == MergeOption.OverwriteChanges)
                     {
                         itemsToRemove = linkedItemsInCollection.Select(i => i.Target);
@@ -266,7 +266,7 @@ namespace Microsoft.OData.Client.Materialization
                     else
                     {
                         Debug.Assert(
-                            this.EntityTrackingAdapter.MergeOption == MergeOption.PreserveChanges, 
+                            this.EntityTrackingAdapter.MergeOption == MergeOption.PreserveChanges,
                             "this.EntityTrackingAdapter.MergeOption == MergeOption.PreserveChanges");
 
                         itemsToRemove = linkedItemsInCollection
@@ -536,15 +536,15 @@ namespace Microsoft.OData.Client.Materialization
                 this.Materialize(MaterializerEntry.GetEntry(feedEntry), collectionType.ElementType, includeLinks);
             }
 
-            ProjectionPlan continuationPlan = includeLinks ? 
-                ODataEntityMaterializer.CreatePlanForDirectMaterialization(property.EntityCollectionItemType) : 
+            ProjectionPlan continuationPlan = includeLinks ?
+                ODataEntityMaterializer.CreatePlanForDirectMaterialization(property.EntityCollectionItemType) :
                 ODataEntityMaterializer.CreatePlanForShallowMaterialization(property.EntityCollectionItemType);
-            
+
             this.ApplyItemsToCollection(
-                entry, 
-                property, 
-                entries.Select(e => MaterializerEntry.GetEntry(e).ResolvedObject), 
-                feed.NextPageLink, 
+                entry,
+                property,
+                entries.Select(e => MaterializerEntry.GetEntry(e).ResolvedObject),
+                feed.NextPageLink,
                 continuationPlan,
                 false);
         }
@@ -571,13 +571,13 @@ namespace Microsoft.OData.Client.Materialization
             // Note that even if ShouldUpdateFromPayload is false, we will still be creating
             // nested instances (but not their links), so they show up in the data context
             // entries. This keeps this code compatible with V1 behavior.
-            this.MaterializeDataValues(actualType, entry.Properties, this.MaterializerContext.IgnoreMissingProperties);
+            this.MaterializeDataValues(actualType, entry.Properties, this.MaterializerContext.UndeclaredPropertyBehavior);
 
             if (entry.NestedResourceInfos != null)
             {
                 foreach (ODataNestedResourceInfo link in entry.NestedResourceInfos)
                 {
-                    var prop = actualType.GetProperty(link.Name, true);
+                    var prop = actualType.GetProperty(link.Name, UndeclaredPropertyBehavior.Support);
                     if (prop != null)
                     {
                         ValidatePropertyMatch(prop, link, this.MaterializerContext.Model, true /*performEntityCheck*/);
@@ -596,7 +596,7 @@ namespace Microsoft.OData.Client.Materialization
                             continue;
                         }
 
-                        var prop = actualType.GetProperty(link.Name, this.MaterializerContext.IgnoreMissingProperties);
+                        var prop = actualType.GetProperty(link.Name, this.MaterializerContext.UndeclaredPropertyBehavior);
 
                         if (prop == null)
                         {
@@ -645,7 +645,7 @@ namespace Microsoft.OData.Client.Materialization
                     continue;
                 }
 
-                var prop = actualType.GetProperty(e.Name, this.MaterializerContext.IgnoreMissingProperties);
+                var prop = actualType.GetProperty(e.Name, this.MaterializerContext.UndeclaredPropertyBehavior);
                 if (prop == null)
                 {
                     continue;

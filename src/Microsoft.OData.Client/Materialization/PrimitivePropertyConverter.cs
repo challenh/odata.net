@@ -25,11 +25,26 @@ namespace Microsoft.OData.Client.Materialization
         /// <summary>
         /// Converts a value to primitive value.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="primitiveOrUntypedvalue">The value.</param>
         /// <param name="propertyType">Type of the property.</param>
         /// <returns>The converted value if the value can be converted</returns>
-        internal object ConvertPrimitiveValue(object value, Type propertyType)
+        internal object ConvertPrimitiveValue(object primitiveOrUntypedvalue, Type propertyType)
         {
+            object value = null;
+            ODataUntypedPrimitiveValue untypedPrimitive = primitiveOrUntypedvalue as ODataUntypedPrimitiveValue;
+            if (untypedPrimitive != null)
+            {
+                value = untypedPrimitive.Value;
+            }
+            else if (primitiveOrUntypedvalue is ODataUntypedValue)
+            {
+                return null;
+            }
+            else
+            {
+                value = primitiveOrUntypedvalue;
+            }
+
             // System.Xml.Linq.XElement and System.Data.Linq.Binaries primitive types are not supported by ODataLib directly,
             // so if the property is of one of those types, we need to convert the value to that type here.
             if (propertyType != null && value != null)

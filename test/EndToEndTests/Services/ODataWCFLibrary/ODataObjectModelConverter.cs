@@ -201,7 +201,17 @@ namespace Microsoft.Test.OData.Services.ODataWCFService
                 {
                     foreach (var p in openPropertiesInClr)
                     {
-                        openProperties.Add(CreateODataProperty(p.Value, p.Key));
+                        object val;
+                        if (p.Value is ODataUntypedPrimitiveValue)
+                        {
+                            val = (p.Value as ODataUntypedPrimitiveValue).Value;
+                        }
+                        else
+                        {
+                            val = p.Value;
+                        }
+
+                        openProperties.Add(CreateODataProperty(val, p.Key));
                     }
                 }
             }
@@ -301,7 +311,9 @@ namespace Microsoft.Test.OData.Services.ODataWCFService
                             else if (structuredType.IsOpen)
                             {
                                 var instance = value as OpenClrObject;
-                                properties.Add(CreateODataProperty(instance.OpenProperties[p.Name], p.Name));
+                                object val = instance.OpenProperties[p.Name];
+                                val = (val is ODataUntypedPrimitiveValue) ? (val as ODataUntypedPrimitiveValue).Value : val;
+                                properties.Add(CreateODataProperty(val, p.Name));
                             }
                         }
 

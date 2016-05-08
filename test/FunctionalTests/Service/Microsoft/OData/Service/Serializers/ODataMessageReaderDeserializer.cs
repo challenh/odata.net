@@ -221,6 +221,16 @@ namespace Microsoft.OData.Service.Serializers
                 return this.ConvertCollection(collection, resourceType);
             }
 
+            if (odataValue is ODataUntypedPrimitiveValue)
+            {
+                return ConvertPrimitiveValue((odataValue as ODataUntypedPrimitiveValue).Value, ref resourceType);
+            }
+
+            if (odataValue is ODataUntypedValue)
+            {
+                return ConvertPrimitiveValue((odataValue as ODataUntypedValue).RawValue, ref resourceType);
+            }
+
             Debug.Assert(!(odataValue is ODataStreamReferenceValue), "We should never get here for stream values.");
             return ConvertPrimitiveValue(odataValue, ref resourceType);
         }

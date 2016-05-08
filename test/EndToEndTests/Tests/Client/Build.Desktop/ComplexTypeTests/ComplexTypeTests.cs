@@ -202,7 +202,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
 
                 //update
                 entry = new ODataResource() { TypeName = NameSpacePrefix + "Person" };
-                entry.Properties = new[] 
+                entry.Properties = new[]
                 {
                     new ODataProperty
                     {
@@ -298,7 +298,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                                 {
                                     Name = "PostalCode",
                                     Value = "200241"
-                                },                            
+                                },
                                 new ODataProperty
                                 {
                                     Name = "FamilyName",
@@ -558,7 +558,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                                 Assert.IsNotNull(accountInfo);
                                 string typeName = NameSpacePrefix + "AccountInfo";
                                 Assert.AreEqual(typeName, accountInfo.TypeName);
-                                Assert.AreEqual("Hood", accountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+                                Assert.AreEqual("Hood", (accountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
 
                                 var colorODataEnumValue = accountInfo.Properties.Single(p => p.Name == "FavoriteColor").Value as ODataEnumValue;
                                 string colorTypeName = NameSpacePrefix + "Color";
@@ -639,7 +639,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                                 Assert.IsNotNull(accountInfo);
                                 string typeName = NameSpacePrefix + "AccountInfo";
                                 Assert.AreEqual(typeName, accountInfo.TypeName);
-                                Assert.AreEqual("Hood", accountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+                                Assert.AreEqual("Hood", (accountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
                             }
                         }
 
@@ -666,12 +666,12 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
             {
                 ODataResource entry = this.QueryEntry("Accounts(101)");
                 ODataComplexValue accountInfo = (entry.Properties.Single(p => p.Name == "AccountInfo").Value as ODataComplexValue);
-                Assert.AreEqual(middleNames[i], accountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+                Assert.AreEqual(middleNames[i], (accountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
 
                 // update
                 bool isPersonalAccount = (i % 2 == 0);
                 entry = new ODataResource() { TypeName = NameSpacePrefix + "Account" };
-                entry.Properties = new[] 
+                entry.Properties = new[]
                 {
                     new ODataProperty
                     {
@@ -731,7 +731,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                 entry = this.QueryEntry("Accounts(101)");
                 var updatedAccountInfo = (entry.Properties.Single(p => p.Name == "AccountInfo").Value as ODataComplexValue);
                 Assert.AreEqual("FN", updatedAccountInfo.Properties.Single(p => p.Name == "FirstName").Value);
-                Assert.AreEqual(middleNames[i + 1], updatedAccountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+                Assert.AreEqual(middleNames[i + 1], (updatedAccountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
                 Assert.AreEqual(isPersonalAccount, updatedAccountInfo.Properties.Single(p => p.Name == "IsPersonalAccount").Value);
             }
         }
@@ -752,7 +752,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                 entry.Properties = new[]
                 {
                     new ODataProperty { Name = "AccountID", Value = 10086 },
-                    new ODataProperty { Name = "CountryRegion", Value = "CN" },                
+                    new ODataProperty { Name = "CountryRegion", Value = "CN" },
                     new ODataProperty
                     {
                         Name = "AccountInfo",
@@ -807,7 +807,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
 
                 ODataComplexValue accountInfo = (entry.Properties.Single(p => p.Name == "AccountInfo").Value as ODataComplexValue);
                 Assert.AreEqual("Peter", accountInfo.Properties.Single(p => p.Name == "FirstName").Value);
-                Assert.AreEqual("#999, ZiXing Road", accountInfo.Properties.Single(p => p.Name == "ShippingAddress").Value);
+                Assert.AreEqual("#999, ZiXing Road", (accountInfo.Properties.Single(p => p.Name == "ShippingAddress").Value as ODataUntypedPrimitiveValue).Value);
 
                 // delete the entry
                 var deleteRequestMessage = new HttpWebRequestMessage(new Uri(ServiceBaseUri + "Accounts(10086)"));
@@ -851,7 +851,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                         ODataComplexValue accountInfo = property.Value as ODataComplexValue;
                         Assert.IsNotNull(accountInfo);
                         Assert.AreEqual("Alex", accountInfo.Properties.Single(p => p.Name == "FirstName").Value);
-                        Assert.AreEqual("Hood", accountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+                        Assert.AreEqual("Hood", (accountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
                     }
                 }
 
@@ -1002,7 +1002,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
             entry.Properties = new[]
             {
                 new ODataProperty { Name = "AccountID", Value = 101 },
-                new ODataProperty { Name = "CountryRegion", Value = "CN" },                
+                new ODataProperty { Name = "CountryRegion", Value = "CN" },
                 new ODataProperty
                 {
                     Name = "AccountInfo",
@@ -1073,7 +1073,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
                         },
                         new ODataProperty
                         {
-                            Name = "FavoriteFood",                            
+                            Name = "FavoriteFood",
                             Value = new ODataCollectionValue()
                             {
                                 TypeName = "Collection(Edm.String)",
@@ -1106,7 +1106,7 @@ namespace Microsoft.Test.OData.Tests.Client.ComplexTypeTests
             var updatedAccountInfo = (entry.Properties.Single(p => p.Name == "AccountInfo").Value as ODataComplexValue);
             Assert.AreEqual("FN", updatedAccountInfo.Properties.Single(p => p.Name == "FirstName").Value);
             Assert.AreEqual("Green", updatedAccountInfo.Properties.Single(p => p.Name == "LastName").Value);
-            Assert.AreEqual("Hood", updatedAccountInfo.Properties.Single(p => p.Name == "MiddleName").Value);
+            Assert.AreEqual("Hood", (updatedAccountInfo.Properties.Single(p => p.Name == "MiddleName").Value as ODataUntypedPrimitiveValue).Value);
             var favoriteFood = updatedAccountInfo.Properties.Single(p => p.Name == "FavoriteFood").Value as ODataCollectionValue;
             // validate items of favoriteFood.
             string[] expectedFavoriteFood = new[] { "meat", "sea food", "apple" };
