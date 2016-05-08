@@ -334,6 +334,9 @@
     <Compile Include="$(ODataCrossTargettingSourcePath)\JsonLight\ODataJsonLightWriterUtils.cs">
       <Link>Microsoft\OData\Core\JsonLight\ODataJsonLightWriterUtils.cs</Link>
     </Compile>
+    <Compile Include="$(ODataCrossTargettingSourcePath)\JsonLight\ODataValueRawAnnotations.cs">
+      <Link>Microsoft\OData\Core\JsonLight\ODataValueRawAnnotations.cs</Link>
+    </Compile>
     <Compile Include="$(ODataCrossTargettingSourcePath)\JsonLight\ReorderingJsonReader.cs">
       <Link>Microsoft\OData\Core\JsonLight\ReorderingJsonReader.cs</Link>
     </Compile>

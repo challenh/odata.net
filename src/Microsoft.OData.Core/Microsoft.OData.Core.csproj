@@ -155,6 +155,7 @@
     <Compile Include="JsonLight\ODataJsonLightValueSerializer.cs" />
     <Compile Include="JsonLight\ODataJsonLightWriter.cs" />
     <Compile Include="JsonLight\ODataJsonLightWriterUtils.cs" />
+    <Compile Include="JsonLight\ODataValueRawAnnotations.cs" />
     <Compile Include="JsonLight\ReorderingJsonReader.cs" />
     <Compile Include="Json\BufferingJsonReader.cs" />
     <Compile Include="Json\ODataJsonFormat.cs" />

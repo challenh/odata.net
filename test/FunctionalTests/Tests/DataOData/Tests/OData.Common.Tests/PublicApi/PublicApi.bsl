@@ -4984,6 +4984,12 @@ public sealed class Microsoft.OData.ODataUrlConventions {
 	Microsoft.OData.ODataUrlConventions ODataSimplified  { public static get; }
 }
 
+public sealed class Microsoft.OData.ODataValueRawAnnotations {
+	public ODataValueRawAnnotations ()
+
+	System.Collections.Generic.IDictionary`2[[System.String],[Microsoft.OData.ODataUntypedValue]] Annotations  { public get; public set; }
+}
+
 public sealed class Microsoft.OData.ProjectedPropertiesAnnotation {
 	public ProjectedPropertiesAnnotation (System.Collections.Generic.IEnumerable`1[[System.String]] projectedPropertyNames)
 }

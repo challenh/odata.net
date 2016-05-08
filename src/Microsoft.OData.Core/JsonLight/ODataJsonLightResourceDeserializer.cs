@@ -1034,7 +1034,8 @@ namespace Microsoft.OData.JsonLight
         /// <param name="resourceState">The resource state for the resource to add the property to.</param>
         /// <param name="propertyName">The name of the property to add.</param>
         /// <param name="propertyValue">The value of the property to add.</param>
-        private static void AddResourceProperty(IODataJsonLightReaderResourceState resourceState, string propertyName, object propertyValue)
+        /// <returns>The added ODataProperty.</returns>
+        private static ODataProperty AddResourceProperty(IODataJsonLightReaderResourceState resourceState, string propertyName, object propertyValue)
         {
             Debug.Assert(resourceState != null, "resourceState != null");
             Debug.Assert(!string.IsNullOrEmpty(propertyName), "!string.IsNullOrEmpty(propertyName)");
@@ -1054,10 +1055,10 @@ namespace Microsoft.OData.JsonLight
             }
 
             resourceState.DuplicatePropertyNamesChecker.CheckForDuplicatePropertyNames(property);
-
             ODataResource resource = resourceState.Resource;
             Debug.Assert(resource != null, "resource != null");
             resource.Properties = resource.Properties.ConcatToReadOnlyEnumerable("Properties", property);
+            return property;
         }
 
         /// <summary>
@@ -1344,7 +1345,13 @@ namespace Microsoft.OData.JsonLight
             }
 
             ValidationUtils.ValidateOpenPropertyValue(propertyName, propertyValue);
-            AddResourceProperty(resourceState, propertyName, propertyValue);
+            ODataProperty property = AddResourceProperty(resourceState, propertyName, propertyValue);
+            if ((propertyValue is ODataUntypedValue) && (resourceState.DuplicatePropertyNamesChecker != null))
+            {
+                TryAttachRawAnnotationSetToPropertyValue(
+                    resourceState.DuplicatePropertyNamesChecker.AnnotationCollector, property);
+            }
+
             this.JsonReader.AssertNotBuffering();
             Debug.Assert(
                         this.JsonReader.NodeType == JsonNodeType.Property || this.JsonReader.NodeType == JsonNodeType.EndObject,
@@ -1486,7 +1493,13 @@ namespace Microsoft.OData.JsonLight
             {
                 bool isTopLevelPropertyValue = false;
                 object propertyValue = this.InnerReadNonOpenUndeclaredProperty(resourceState.DuplicatePropertyNamesChecker, propertyName, isTopLevelPropertyValue);
-                AddResourceProperty(resourceState, propertyName, propertyValue);
+                ODataProperty property = AddResourceProperty(resourceState, propertyName, propertyValue);
+                if (resourceState.DuplicatePropertyNamesChecker != null)
+                {
+                    TryAttachRawAnnotationSetToPropertyValue(
+                        resourceState.DuplicatePropertyNamesChecker.AnnotationCollector,
+                        property);
+                }
             }
             else
             {
