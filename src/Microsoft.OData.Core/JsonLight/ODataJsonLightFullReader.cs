@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// <copyright file="ODataJsonLightReader.cs" company="Microsoft">
+// <copyright file="ODataJsonLightFullReader.cs" company="Microsoft">
 //      Copyright (C) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 // </copyright>
 //---------------------------------------------------------------------
@@ -24,7 +24,7 @@ namespace Microsoft.OData.JsonLight
     /// <summary>
     /// OData reader for the JsonLight format.
     /// </summary>
-    internal sealed class ODataJsonLightReader : ODataReaderCoreAsync
+    internal sealed class ODataJsonLightFullReader : ODataReaderCoreAsync
     {
         /// <summary>The input to read the payload from.</summary>
         private readonly ODataJsonLightInputContext jsonLightInputContext;
@@ -48,7 +48,7 @@ namespace Microsoft.OData.JsonLight
         /// <param name="readingParameter">true if the reader is created for reading a parameter; false otherwise.</param>
         /// <param name="readingDelta">true if the reader is created for reading expanded navigation property in delta response; false otherwise.</param>
         /// <param name="listener">If not null, the Json reader will notify the implementer of the interface of relevant state changes in the Json reader.</param>
-        internal ODataJsonLightReader(
+        internal ODataJsonLightFullReader(
             ODataJsonLightInputContext jsonLightInputContext,
             IEdmNavigationSource navigationSource,
             IEdmEntityType expectedEntityType,

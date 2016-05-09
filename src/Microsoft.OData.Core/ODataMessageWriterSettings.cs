@@ -105,6 +105,8 @@ namespace Microsoft.OData
             this.EnableFullValidation = other.EnableFullValidation;
             this.mediaTypeResolver = other.mediaTypeResolver;
             this.ODataSimplified = other.ODataSimplified;
+
+            // this.MetadataValidationLevel = other.MetadataValidationLevel;
         }
 
         /// <summary>Gets or sets the OData protocol version to be used for writing payloads. </summary>

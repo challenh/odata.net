@@ -10,6 +10,32 @@ namespace Microsoft.OData
     using Microsoft.OData.Edm;
 
     /// <summary>
+    /// The validation level.
+    /// </summary>
+    public enum MetadataValidationLevel
+    {
+        /// <summary>
+        /// For full validatoin and supporting undecalred property
+        /// </summary>
+        Full = 0,
+
+        /// <summary>
+        /// For least validation and supporting undecalred property
+        /// </summary>
+        Lite = 1,
+
+        /// <summary>
+        /// For full validation and not supporting undecalred property
+        /// </summary>
+        FullNotSupportingUndeclaredProperty = 2,
+
+        /// <summary>
+        /// For least validation and not supporting undecalred property
+        /// </summary>
+        LiteNotSupportingUndeclaredProperty = 4,
+    }
+
+    /// <summary>
     /// Configuration settings for OData message readers.
     /// </summary>
     public sealed class ODataMessageReaderSettings : ODataMessageReaderSettingsBase, IMessageValidationSetting
@@ -64,6 +90,7 @@ namespace Microsoft.OData
             this.UseKeyAsSegment = other.UseKeyAsSegment;
             this.mediaTypeResolver = other.mediaTypeResolver;
             this.ODataSimplified = other.ODataSimplified;
+            this.MetadataValidationLevel = other.MetadataValidationLevel;
         }
 
         /// <summary>
@@ -110,6 +137,11 @@ namespace Microsoft.OData
         /// <summary>Gets or sets a value that indicates whether not to convert all primitive values to the type specified in the model or provided as an expected type. Note that values will still be converted to the type specified in the payload itself.</summary>
         /// <returns>true if primitive values and report values are not converted; false if all primitive values are converted to the type specified in the model or provided as an expected type. The default value is false.</returns>
         public bool DisablePrimitiveTypeConversion { get; set; }
+
+        /// <summary>
+        /// The metadata validation level
+        /// </summary>
+        public MetadataValidationLevel MetadataValidationLevel { get; set; }
 
         /// <summary>Gets or sets the behavior the reader should use when it finds undeclared property.</summary>
         /// <returns>The behavior the reader should use when it finds undeclared property.</returns>

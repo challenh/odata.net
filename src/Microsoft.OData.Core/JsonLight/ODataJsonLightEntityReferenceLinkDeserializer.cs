@@ -338,7 +338,7 @@ namespace Microsoft.OData.JsonLight
             Debug.Assert(links != null, "links != null");
             this.AssertJsonCondition(JsonNodeType.PrimitiveValue);
             Debug.Assert(!links.Count.HasValue, "We should have checked for duplicates already.");
-            links.Count = this.ReadAndValidateAnnotationAsLongForIeee754Compatible(ODataAnnotationNames.ODataCount);
+            links.Count = ODataJsonLightResourceDeserializer.ReadAndValidateAnnotationAsLongForIeee754Compatible(this.JsonLightInputContext, ODataAnnotationNames.ODataCount);
         }
 
         /// <summary>

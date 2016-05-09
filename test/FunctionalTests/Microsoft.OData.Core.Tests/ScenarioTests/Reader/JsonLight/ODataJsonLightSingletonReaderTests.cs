@@ -411,7 +411,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
                 /*urlResolver*/ null,
                 /*container*/ null))
             {
-                var jsonLightReader = new ODataJsonLightReader(inputContext, singleton, webType, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, singleton, webType, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.ResourceEnd)
@@ -442,7 +442,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
                 /*urlResolver*/ null,
                 /*container*/ null))
             {
-                var jsonLightReader = new ODataJsonLightReader(inputContext, singleton, webType, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, singleton, webType, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.NestedResourceInfoEnd)

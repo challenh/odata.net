@@ -149,8 +149,8 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             }
         }
 
-        [Fact]
-        public void NextLinkComesBeforeAndAfterTopLevelFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NextLinkComesBeforeAndAfterTopLevelFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             foreach (bool isResponse in new[] { true, false })
             {
@@ -159,11 +159,11 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 ""value"" : [],
                 ""@odata.nextLink"" : ""http://nextLink2""";
 
-                var entryReader = this.GetFeedReader(feedText, isResponse);
+                var entryReader = this.GetFeedReader(feedText, isResponse, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
                 entryReader.Read();
                 entryReader.State.Should().Be(ODataReaderState.ResourceSetStart);
                 entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(new Uri("http://nextLink"));
-                Action read = () => entryReader.Read();
+                Action read = () => { entryReader.Read(); entryReader.Read(); };
                 read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.DuplicatePropertyNamesChecker_DuplicateAnnotationNotAllowed("odata.nextLink"));
             }
         }
@@ -208,14 +208,14 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Item.As<ODataResourceSet>().Count.Should().Be(0);
         }
 
-        [Fact]
-        public void CountComesAfterInnerFeedOnResponse()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void CountComesAfterInnerFeedOnResponse(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp"" : [],
                 ""NavProp@odata.count"" : 0";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -226,23 +226,35 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceSetEnd);
             entryReader.Item.As<ODataResourceSet>().Count.Should().Be(0);
+            entryReader.Read();
+            entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoEnd);
         }
 
-        [Fact]
-        public void CountComesBeforeAndAfterInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void CountComesBeforeAndAfterInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp@odata.count"" : 0,
                 ""NavProp"" : [],
                 ""NavProp@odata.count"" : 0";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoStart);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceSetStart);
+
+            //entryReader.Read();
+            //entryReader.State.Should().Be(ODataReaderState.ResourceSetEnd);
+            //ODataResourceSet resourceSet = entryReader.Item.As<ODataResourceSet>();
+            //if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            //{
+            //    entryReader.Read();
+            //    entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoEnd);
+            //    resourceSet.Count.Should().Be(0);
+            //}
             entryReader.Item.As<ODataResourceSet>().Count.Should().Be(0);
             Action read = () => entryReader.Read();
             read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightEntryAndFeedDeserializer_DuplicateExpandedFeedAnnotation("odata.count", "NavProp"));
@@ -299,8 +311,11 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Item.As<ODataResourceSet>().Count.Should().Be(null);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceSetEnd);
-            entryReader.Item.As<ODataResourceSet>().Count.Should().Be(2);
-            entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(new Uri("http://nextLink"));
+            ODataResourceSet resourceSet = entryReader.Item.As<ODataResourceSet>();
+            entryReader.Read();
+            entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoEnd);
+            resourceSet.Count.Should().Be(2);
+            resourceSet.NextPageLink.Should().Be(new Uri("http://nextLink"));
         }
 
         [Fact]
@@ -337,15 +352,15 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
 
         #endregion
 
-        [Fact]
-        public void NonZeroCountComesBeforeAndAfterInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NonZeroCountComesBeforeAndAfterInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp@odata.count"" : 2,
                 ""NavProp"" : [],
                 ""NavProp@odata.count"" : 2";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -357,8 +372,8 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightEntryAndFeedDeserializer_DuplicateExpandedFeedAnnotation("odata.count", "NavProp"));
         }
 
-        [Fact]
-        public void DifferentPropertyInBetweenInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void DifferentPropertyInBetweenInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp"" : [],
@@ -366,7 +381,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 ""PrimitiveProp"" : 1,
                 ""NavProp@odata.count"" : 2";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -380,6 +395,12 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoEnd);
             Action read = () => entryReader.Read();
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                read();
+                return;  // TODO lite mode no exception
+            }
+
             read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.DuplicatePropertyNamesChecker_PropertyAnnotationAfterTheProperty("odata.count", "NavProp"));
         }
 
@@ -400,20 +421,26 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(new Uri("http://nextLink"));
         }
 
-        [Fact]
-        public void NextLinkComesBeforeInnerFeedOnRequestShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NextLinkComesBeforeInnerFeedOnRequestShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp@odata.nextLink"" : ""http://nextLink"",
                 ""NavProp"" : []";
 
-            var entryReader = GetEntryReader(entryText, isResponse: false);
+            var entryReader = GetEntryReader(entryText, isResponse: false, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             Action test = () => entryReader.Read();
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                test();
+                return;  // TODO lite mode no exception
+            }
+
             test.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightEntryAndFeedDeserializer_UnexpectedNavigationLinkInRequestPropertyAnnotation("NavProp", "odata.nextLink", "odata.bind"));
         }
 
-        [Fact]
-        public void DeltaLinkComesBeforeInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void DeltaLinkComesBeforeInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             foreach (bool isResponse in new[] { true, false })
             {
@@ -422,21 +449,28 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 ""NavProp@odata.deltaLink"" : ""http://deltaLink"",
                 ""NavProp"" : []";
 
-                var entryReader = GetEntryReader(entryText, isResponse);
+                var entryReader = GetEntryReader(entryText, isResponse, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
+
+                if (metadataValidationLevel == MetadataValidationLevel.Lite)
+                {
+                    entryReader.Read();
+                    continue;  // TODO lite mode no exception
+                }
+
                 Action test = () => entryReader.Read();
                 test.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightPropertyAndValueDeserializer_UnexpectedAnnotationProperties("odata.deltaLink"));
             }
         }
 
-        [Fact]
-        public void NextLinkComesBeforeAndAfterInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NextLinkComesBeforeAndAfterInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp@odata.nextLink"" : ""http://nextlink"",
                 ""NavProp"" : [],
                 ""NavProp@odata.nextLink"" : ""http://nextLink2""";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -444,18 +478,23 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceSetStart);
             entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(new Uri("http://nextLink"));
-            Action read = () => entryReader.Read();
+            Action read = () => { entryReader.Read(); entryReader.Read(); };
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.DuplicatePropertyNamesChecker_DuplicateAnnotationNotAllowed("odata.nextLink"));
+                return;  // TODO lite mode no exception
+            }
             read.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightEntryAndFeedDeserializer_DuplicateExpandedFeedAnnotation("odata.nextLink", "NavProp"));
         }
 
-        [Fact]
-        public void NextLinkComesAfterInnerFeedOnResponse()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NextLinkComesAfterInnerFeedOnResponse(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp"" : [],
                 ""NavProp@odata.nextLink"" : ""http://nextLink""";
 
-            var entryReader = GetEntryReader(entryText, isResponse: true);
+            var entryReader = GetEntryReader(entryText, isResponse: true, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -465,17 +504,20 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(null);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceSetEnd);
-            entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(new Uri("http://nextLink"));
+            ODataResourceSet resourceSet = entryReader.Item.As<ODataResourceSet>();
+            entryReader.Read();
+            entryReader.State.Should().Be(ODataReaderState.NestedResourceInfoEnd);
+            resourceSet.NextPageLink.Should().Be(new Uri("http://nextLink"));
         }
 
-        [Fact]
-        public void NextLinkComesAfterInnerFeedOnRequestShouldFail()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void NextLinkComesAfterInnerFeedOnRequestShouldFail(MetadataValidationLevel metadataValidationLevel)
         {
             const string entryText = @"
                 ""NavProp"" : [],
                 ""NavProp@odata.nextLink"" : ""http://nextLink""";
 
-            var entryReader = GetEntryReader(entryText, isResponse: false);
+            var entryReader = GetEntryReader(entryText, isResponse: false, odataSimplified: false, metadataValidationLevel: metadataValidationLevel);
             entryReader.Read();
             entryReader.State.Should().Be(ODataReaderState.ResourceStart);
             entryReader.Read();
@@ -487,8 +529,8 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             test.ShouldThrow<ODataException>().WithMessage(ErrorStrings.ODataJsonLightPropertyAndValueDeserializer_UnexpectedPropertyAnnotation("NavProp", "odata.nextLink"));
         }
 
-        [Fact]
-        public void DeltaLinkComesAfterInnerFeedShouldThrow()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void DeltaLinkComesAfterInnerFeedShouldThrow(MetadataValidationLevel metadataValidationLevel)
         {
             foreach (bool isResponse in new[] { true, false })
             {
@@ -496,7 +538,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 ""NavProp"" : [],
                 ""NavProp@odata.deltaLink"" : ""http://deltaLink""";
 
-                var entryReader = GetEntryReader(entryText, isResponse);
+                var entryReader = GetEntryReader(entryText, isResponse, false, metadataValidationLevel);
                 entryReader.Read();
                 entryReader.State.Should().Be(ODataReaderState.ResourceStart);
                 entryReader.Read();
@@ -505,6 +547,12 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                 entryReader.State.Should().Be(ODataReaderState.ResourceSetStart);
                 entryReader.Item.As<ODataResourceSet>().NextPageLink.Should().Be(null);
                 Action test = () => entryReader.Read();
+                if (metadataValidationLevel == MetadataValidationLevel.Lite)
+                {
+                    test();
+                    return;  // TODO lite mode no exception
+                }
+
                 string expectedErrorMsg = isResponse ? ErrorStrings.ODataJsonLightEntryAndFeedDeserializer_UnexpectedPropertyAnnotationAfterExpandedFeed("odata.deltaLink", "NavProp") : ErrorStrings.ODataJsonLightPropertyAndValueDeserializer_UnexpectedPropertyAnnotation("NavProp", "odata.deltaLink");
                 test.ShouldThrow<ODataException>().WithMessage(expectedErrorMsg);
             }
@@ -512,18 +560,18 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
 
         #endregion expanded feeds
 
-        private ODataReader GetEntryReader(string entryText, bool isResponse, bool odataSimplified = false)
+        private ODataReader GetEntryReader(string entryText, bool isResponse, bool odataSimplified = false, MetadataValidationLevel metadataValidationLevel = MetadataValidationLevel.Lite)
         {
-            this.CreateMessageReader(entryText, /*forEntry*/ true, isResponse, odataSimplified);
+            this.CreateMessageReader(entryText, /*forEntry*/ true, isResponse, odataSimplified, metadataValidationLevel);
             return this.messageReader.CreateODataResourceReader(this.entitySet, this.type);
         }
-        private ODataReader GetFeedReader(string feedText, bool isResponse, bool odataSimplified = false)
+        private ODataReader GetFeedReader(string feedText, bool isResponse, bool odataSimplified = false, MetadataValidationLevel metadataValidationLevel = MetadataValidationLevel.Lite)
         {
-            this.CreateMessageReader(feedText, /*forEntry*/ false, isResponse, odataSimplified);
+            this.CreateMessageReader(feedText, /*forEntry*/ false, isResponse, odataSimplified, metadataValidationLevel);
             return this.messageReader.CreateODataResourceSetReader(this.entitySet, this.type);
         }
 
-        private void CreateMessageReader(string payloadBody, bool forEntry, bool isResponse, bool odataSimplified)
+        private void CreateMessageReader(string payloadBody, bool forEntry, bool isResponse, bool odataSimplified, MetadataValidationLevel metadataValidationLevel = MetadataValidationLevel.Lite)
         {
             string payloadPrefix = @"{
   ""@odata.context"":""http://example.com/$metadata#EntitySet" + (forEntry ? "/$entity" : string.Empty) + "\",";
@@ -533,7 +581,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             var message = new InMemoryMessage();
             message.Stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             message.SetHeader("Content-Type", "application/json;odata.metadata=minimal;odata.streaming=true");
-            var messageSettings = new ODataMessageReaderSettings { ODataSimplified = odataSimplified };
+            var messageSettings = new ODataMessageReaderSettings { ODataSimplified = odataSimplified, MetadataValidationLevel = metadataValidationLevel };
             if (isResponse)
             {
                 this.messageReader = new ODataMessageReader((IODataResponseMessage)message, messageSettings, this.model);

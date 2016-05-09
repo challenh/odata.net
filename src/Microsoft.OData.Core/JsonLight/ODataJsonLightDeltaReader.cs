@@ -667,7 +667,7 @@ namespace Microsoft.OData.JsonLight
             this.PreReadAtStartImplementation(out duplicatePropertyNamesChecker);
 
             return this.jsonLightResourceDeserializer.ReadPayloadStartAsync(
-                ODataPayloadKind.ResourceSet, 
+                ODataPayloadKind.ResourceSet,
                 duplicatePropertyNamesChecker,
                 /*isReadingNestedPayload*/false,
                 /*allowEmptyPayload*/false)
@@ -759,7 +759,7 @@ namespace Microsoft.OData.JsonLight
 
             // Read top-level resource set annotations.
             this.jsonLightResourceDeserializer.ReadTopLevelResourceSetAnnotations(resourceSet, duplicatePropertyNamesChecker, /*forResourceSetStart*/true, /*readAllResourceSetProperties*/isReordering);
-            
+
             // Enter DeltaResourceSetStart state.
             this.ReadDeltaResourceSetStart(resourceSet, selectedProperties);
 
@@ -781,7 +781,7 @@ namespace Microsoft.OData.JsonLight
         private bool ReadAtDeltaResourceSetStartImplementationSynchronously()
         {
             Debug.Assert(this.State == ODataDeltaReaderState.DeltaResourceSetStart, "this.State == ODataDeltaReaderState.DeltaResourceSetStart");
-            
+
             this.jsonLightResourceDeserializer.AssertJsonCondition(JsonNodeType.EndArray, JsonNodeType.PrimitiveValue, JsonNodeType.StartObject, JsonNodeType.StartArray);
 
             // figure out whether the resource set contains entries or not
@@ -1139,7 +1139,7 @@ namespace Microsoft.OData.JsonLight
                         contextUri,
                         ODataPayloadKind.Delta,
                         ODataReaderBehavior.DefaultBehavior,
-                        /*needParseFragment*/true);
+                    /*needParseFragment*/true);
                 deltaKind = contextUriParseResult.DeltaKind;
                 entityTypeFromContextUri = contextUriParseResult.EdmType as IEdmEntityType;
             }
@@ -1559,7 +1559,7 @@ namespace Microsoft.OData.JsonLight
             IEdmEntityTypeReference targetEntityTypeReference =
                 (IEdmEntityTypeReference)ReaderValidationUtils.ResolvePayloadTypeNameAndComputeTargetType(
                     EdmTypeKind.Entity,
-                    /*defaultPrimitivePayloadType*/ null,
+                /*defaultPrimitivePayloadType*/ null,
                     this.CurrentEntityType.ToTypeReference(),
                     entityTypeNameFromPayload,
                     this.jsonLightInputContext.Model,
@@ -1944,7 +1944,7 @@ namespace Microsoft.OData.JsonLight
                 IEdmNavigationSource navigationSource = parentNavigationSource.FindNavigationTarget(navigationLinkInfo.NavigationProperty);
                 IEdmEntityType entityType = navigationLinkInfo.NavigationProperty.ToEntityType();
                 bool readingResourceSet = navigationLinkInfo.NavigationProperty.Type.IsCollection();
-                this.expandedNavigationPropertyReader = new ODataJsonLightReader(jsonLightInputContext, navigationSource, entityType, readingResourceSet, readingDelta: true);
+                this.expandedNavigationPropertyReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(jsonLightInputContext, navigationSource, entityType, readingResourceSet, readingDelta: true);
             }
 
             /// <summary>

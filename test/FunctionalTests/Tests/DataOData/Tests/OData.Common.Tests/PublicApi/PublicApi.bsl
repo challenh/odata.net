@@ -3763,6 +3763,13 @@ public enum Microsoft.OData.DeltaDeletedEntryReason : int {
 	Deleted = 0
 }
 
+public enum Microsoft.OData.MetadataValidationLevel : int {
+	Full = 0
+	FullNotSupportingUndeclaredProperty = 2
+	Lite = 1
+	LiteNotSupportingUndeclaredProperty = 4
+}
+
 public enum Microsoft.OData.ODataBatchReaderState : int {
 	ChangesetEnd = 3
 	ChangesetStart = 2
@@ -4755,6 +4762,7 @@ public sealed class Microsoft.OData.ODataMessageReaderSettings : Microsoft.OData
 	bool EnableFullValidation  { public virtual get; public virtual set; }
 	Microsoft.OData.ODataVersion MaxProtocolVersion  { public get; public set; }
 	Microsoft.OData.ODataMediaTypeResolver MediaTypeResolver  { public get; public set; }
+	Microsoft.OData.MetadataValidationLevel MetadataValidationLevel  { public get; public set; }
 	bool ODataSimplified  { public get; public set; }
 	System.Uri PayloadBaseUri  { public get; public set; }
 	Microsoft.OData.ODataUndeclaredPropertyBehaviorKinds UndeclaredPropertyBehaviorKinds  { public virtual get; public virtual set; }

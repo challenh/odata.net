@@ -214,7 +214,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Roundtrip.JsonLight
                 /*urlResolver*/ null,
                 /*container*/ null))
             {
-                var jsonLightReader = new ODataJsonLightReader(inputContext, this.studentSet, this.studentInfo, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, this.studentSet, this.studentInfo, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.ResourceEnd)

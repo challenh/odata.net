@@ -75,7 +75,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             EdmComplexType myDerivedComplexType = new EdmComplexType("NS", "MyDerivedComplexType", myComplexType, false);
             myDerivedComplexType.AddProperty(new EdmStructuralProperty(myDerivedComplexType, "MyDerivedColorFlags", new EdmEnumTypeReference(enumFlagsType, false)));
             tmpModel.AddElement(myDerivedComplexType);
-            
+
             // enum in collection type
             EdmCollectionType myCollectionType = new EdmCollectionType(enumFlagsTypeReference);
             this.entityType.AddProperty(new EdmStructuralProperty(this.entityType, "MyCollectionType", new EdmCollectionTypeReference(myCollectionType)));
@@ -152,7 +152,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
                     }
             };
 
-            Action action = () => this.ReadEntryPayloadAndVerify(payload, "application/json;odata.metadata=minimal", expectedEntry);
+            Action action = () => this.ReadEntryPayloadAndVerify(payload, "application/json;odata.metadata=minimal", expectedEntry, MetadataValidationLevel.Full);
             string fullName = this.entityType.FindProperty("ColorFlags").Type.FullName();
             action.ShouldThrow<ODataException>().WithMessage(Strings.ReaderValidationUtils_NullNamedValueForNonNullableType("MyColorFlags", fullName));
         }
@@ -337,7 +337,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
 
             // test payload as request
             ODataResource entry = null;
-            ReadReqeustEntryPayload(this.userModel, payload, "application/json;odata.metadata=none", this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; });
+            ReadReqeustEntryPayload(this.userModel, payload, "application/json;odata.metadata=none", this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; }, MetadataValidationLevel.Full);
             entry.TypeName.Should().Be(expectedEntry.TypeName);
             TestUtils.AssertODataPropertiesAreEqual(expectedEntry.Properties, entry.Properties);
 
@@ -387,7 +387,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
         {
             const string payload = "{\"@odata.context\":\"http://odata.org/test/$metadata#MySet/$entity\",\"FloatId\":12.3,\"ColorFlags\":2}";
             ODataResource entry = null;
-            Action parse = () => ReadReqeustEntryPayload(this.userModel, payload, "application/json;odata.metadata=minimal", this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; });
+            Action parse = () => ReadReqeustEntryPayload(this.userModel, payload, "application/json;odata.metadata=minimal", this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; }, MetadataValidationLevel.Full);
             parse.ShouldThrow<ODataException>().WithMessage(Strings.JsonReaderExtensions_CannotReadValueAsString("2"));
         }
         #endregion
@@ -574,27 +574,32 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             };
             action.ShouldThrow<ODataException>();
         }
-
         private void ReadEntryPayloadAndVerify(string payload, string contentType, ODataResource expectedEntry)
+        {
+            ReadEntryPayloadAndVerify(payload, contentType, expectedEntry, MetadataValidationLevel.Full);
+        }
+
+        private void ReadEntryPayloadAndVerify(string payload, string contentType, ODataResource expectedEntry, MetadataValidationLevel metadataValidationLevel)
         {
             // test payload as request
             ODataResource entry = null;
-            ReadReqeustEntryPayload(this.userModel, payload, contentType, this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; });
+            ReadReqeustEntryPayload(this.userModel, payload, contentType, this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; }, metadataValidationLevel);
             entry.TypeName.Should().Be(expectedEntry.TypeName);
             TestUtils.AssertODataPropertiesAreEqual(expectedEntry.Properties, entry.Properties);
 
             // test payload as response
             entry = null;
-            ReadResponseEntryPayload(this.userModel, payload, contentType, this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; });
+            ReadResponseEntryPayload(this.userModel, payload, contentType, this.entitySet, this.entityType, reader => { entry = entry ?? reader.Item as ODataResource; }, metadataValidationLevel);
             entry.TypeName.Should().Be(expectedEntry.TypeName);
             TestUtils.AssertODataPropertiesAreEqual(expectedEntry.Properties, entry.Properties);
         }
 
-        private static void ReadReqeustEntryPayload(IEdmModel userModel, string payload, string contentType, EdmEntitySet entitySet, IEdmEntityType entityType, Action<ODataReader> action)
+        private static void ReadReqeustEntryPayload(IEdmModel userModel, string payload, string contentType,
+            EdmEntitySet entitySet, IEdmEntityType entityType, Action<ODataReader> action, MetadataValidationLevel metadataValidationLevel)
         {
             var message = new InMemoryMessage() { Stream = new MemoryStream(Encoding.UTF8.GetBytes(payload)) };
             message.SetHeader("Content-Type", contentType);
-            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false };
+            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false, MetadataValidationLevel = metadataValidationLevel };
             using (var msgReader = new ODataMessageReader((IODataRequestMessage)message, readerSettings, userModel))
             {
                 var reader = msgReader.CreateODataResourceReader(entitySet, entityType);
@@ -605,11 +610,12 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             }
         }
 
-        private static void ReadResponseEntryPayload(IEdmModel userModel, string payload, string contentType, EdmEntitySet entitySet, IEdmEntityType entityType, Action<ODataReader> action)
+        private static void ReadResponseEntryPayload(IEdmModel userModel, string payload, string contentType,
+            EdmEntitySet entitySet, IEdmEntityType entityType, Action<ODataReader> action, MetadataValidationLevel metadataValidationLevel)
         {
             var message = new InMemoryMessage() { Stream = new MemoryStream(Encoding.UTF8.GetBytes(payload)) };
             message.SetHeader("Content-Type", contentType);
-            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false };
+            var readerSettings = new ODataMessageReaderSettings { DisableMessageStreamDisposal = false, MetadataValidationLevel = metadataValidationLevel };
             using (var msgReader = new ODataMessageReader((IODataResponseMessage)message, readerSettings, userModel))
             {
                 var reader = msgReader.CreateODataResourceReader(entitySet, entityType);

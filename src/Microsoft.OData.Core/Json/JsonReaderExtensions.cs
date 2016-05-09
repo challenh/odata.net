@@ -228,9 +228,9 @@ namespace Microsoft.OData.Json
             while (depth > 0);
         }
 
-        internal static ODataValue ReadAsUntypedOrNullValue(this IJsonReader jsonReader)
+        internal static ODataUntypedValue ReadAsUntypedOrNullValue(this IJsonReader jsonReader)
         {
-            ODataValue propertyValue;
+            ODataUntypedValue propertyValue;
             if (jsonReader.NodeType == JsonNodeType.PrimitiveValue)
             {
                 propertyValue = new ODataUntypedPrimitiveValue()

@@ -672,7 +672,7 @@ namespace Microsoft.OData.JsonLight
         /// <returns>The newly created <see cref="ODataReader"/>.</returns>
         private ODataReader CreateResourceSetReaderImplementation(IEdmEntitySetBase entitySet, IEdmEntityType expectedBaseEntityType)
         {
-            return new ODataJsonLightReader(this, entitySet, expectedBaseEntityType, true);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this, entitySet, expectedBaseEntityType, true);
         }
 
         /// <summary>
@@ -694,7 +694,7 @@ namespace Microsoft.OData.JsonLight
         /// <returns>The newly created <see cref="ODataReader"/>.</returns>
         private ODataReader CreateResourceReaderImplementation(IEdmNavigationSource navigationSource, IEdmEntityType expectedEntityType)
         {
-            return new ODataJsonLightReader(this, navigationSource, expectedEntityType, false);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this, navigationSource, expectedEntityType, false);
         }
 
         /// <summary>

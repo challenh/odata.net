@@ -22,13 +22,13 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
         private readonly ODataResource entryWithPayloadMetadata = new ODataResource
         {
             Properties = new[] {
-                    new ODataProperty { Name = "ID", Value = 123 }, 
+                    new ODataProperty { Name = "ID", Value = 123 },
                     new ODataProperty
                     {
-                        Name = "StreamProp1", 
+                        Name = "StreamProp1",
                         Value = new ODataStreamReferenceValue
                         {
-                            ContentType = "image/jpeg", 
+                            ContentType = "image/jpeg",
                             EditLink = new Uri("http://example.com/stream/edit"),
                             ReadLink = new Uri("http://example.com/stream/read"),
                             ETag = "stream etag"
@@ -739,7 +739,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
         {
             ODataItem[] itemsToWrite = new ODataItem[]
             {
-                new ODataResourceSet(), 
+                new ODataResourceSet(),
                 this.derivedEntry,
                 this.containedNavLinkWithPayloadMetadata,
                 this.entryWithOnlyData
@@ -756,7 +756,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
         {
             ODataItem[] itemsToWrite = new ODataItem[]
             {
-                new ODataResourceSet(), 
+                new ODataResourceSet(),
                 this.derivedEntry,
             };
 
@@ -774,7 +774,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
         {
             ODataItem[] itemsToWrite = new ODataItem[]
             {
-                new ODataResourceSet(), 
+                new ODataResourceSet(),
                 this.derivedEntry,
             };
 
@@ -792,10 +792,10 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
         {
             ODataItem[] itemsToWrite = new ODataItem[]
             {
-                new ODataResourceSet(), 
+                new ODataResourceSet(),
                 this.derivedEntry,
                 this.derivedContainedCollectionNavLinkWithPayloadMetadata,
-                new ODataResourceSet(), 
+                new ODataResourceSet(),
                 this.entryWithOnlyData
             };
 
@@ -886,8 +886,8 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             entryWithOnlyData2.Id.Should().Be("http://example.com/EntitySet(234)");
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedElementShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedElementShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -911,7 +911,8 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message,
+                new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var reader = messageReader.CreateODataResourceSetReader(EntitySet, EntityType);
                 while (reader.Read())
@@ -926,14 +927,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(123)/ContainedNonCollectionNavProp");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedEntitySetShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedEntitySetShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -951,7 +957,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -968,14 +974,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -994,7 +1005,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("AnotherContainedNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1011,14 +1022,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/AnotherContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeUseDefaultCtorWithContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeUseDefaultCtorWithContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1037,7 +1053,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var reader = messageReader.CreateODataResourceSetReader();
                 while (reader.Read())
@@ -1052,14 +1068,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/AnotherContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedNonCollectionEntitySetShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedNonCollectionEntitySetShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1075,7 +1096,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNonCollectionNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1092,14 +1113,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNonCollectionNavProp");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedNonCollectionEntitySetOfAnotherTypeShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedNonCollectionEntitySetOfAnotherTypeShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1115,7 +1141,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("AnotherContainedNonCollectionNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1132,14 +1158,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/AnotherContainedNonCollectionNavProp");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithTwoLevelContainedEntitySetShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithTwoLevelContainedEntitySetShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1158,7 +1189,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1176,14 +1207,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNavProp(2)/ContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithTwoLevelContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithTwoLevelContainedEntitySetOfAnotherTypeShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1202,7 +1238,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1221,14 +1257,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNavProp(2)/AnotherContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithContainedEntitySetAndTypeCastShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithContainedEntitySetAndTypeCastShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1247,7 +1288,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1264,14 +1305,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNavProp(123)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithNonCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithNonCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1286,7 +1332,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var navProp = EntityType.FindProperty("ContainedNonCollectionNavProp") as IEdmNavigationProperty;
                 var containedEntitySet = EntitySet.FindNavigationTarget(navProp) as IEdmEntitySetBase;
@@ -1303,14 +1349,24 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(1)/ContainedNonCollectionNavProp");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithExpandedCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithExpandedCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1332,7 +1388,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var reader = messageReader.CreateODataResourceReader(EntitySet, EntityType);
                 while (reader.Read())
@@ -1347,14 +1403,19 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                 }
             }
 
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
+            }
+
             Uri containedId = new Uri("http://example.com/EntitySet(123)/ContainedNavProp(234)");
 
             ODataResource containedEntry = entryList[0];
             containedEntry.Id.Should().Be(containedId);
         }
 
-        [Fact]
-        public void ReadingInMinialMetadataModeWithExpandedNonCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId()
+        [Theory, InlineData(MetadataValidationLevel.Full), InlineData(MetadataValidationLevel.Lite)]
+        public void ReadingInMinialMetadataModeWithExpandedNonCollectionContainedEntitySetAndTypeCastShouldBeAbleToGenerateId(MetadataValidationLevel metadataValidationLevel)
         {
             const string payload =
                 "{" +
@@ -1376,7 +1437,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataResource topLevelEntry = null;
             List<ODataResource> entryList = new List<ODataResource>();
 
-            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, null, Model))
+            using (var messageReader = new ODataMessageReader((IODataResponseMessage)message, new ODataMessageReaderSettings() { MetadataValidationLevel = metadataValidationLevel }, Model))
             {
                 var reader = messageReader.CreateODataResourceReader(EntitySet, EntityType);
                 while (reader.Read())
@@ -1389,6 +1450,11 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
                             break;
                     }
                 }
+            }
+
+            if (metadataValidationLevel == MetadataValidationLevel.Lite)
+            {
+                return;  // TODO computer id even in Lite mode
             }
 
             Uri containedId = new Uri("http://example.com/EntitySet(123)/ContainedNonCollectionNavProp");
