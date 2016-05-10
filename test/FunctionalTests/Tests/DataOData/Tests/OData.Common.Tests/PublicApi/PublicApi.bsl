@@ -6383,6 +6383,7 @@ public class Microsoft.OData.Client.DataServiceContext {
 	System.Collections.ObjectModel.ReadOnlyCollection`1[[Microsoft.OData.Client.LinkDescriptor]] Links  { public get; }
 	Microsoft.OData.Client.ODataProtocolVersion MaxProtocolVersion  { public get; }
 	Microsoft.OData.Client.MergeOption MergeOption  { public get; public set; }
+	Microsoft.OData.MetadataValidationLevel MetadataValidationLevel  { public get; public set; }
 	bool ODataSimplified  { public get; public set; }
 	System.Func`2[[System.String],[System.Uri]] ResolveEntitySet  { public get; public set; }
 	System.Func`2[[System.Type],[System.String]] ResolveName  { public get; public set; }
