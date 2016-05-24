@@ -6,6 +6,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using FluentAssertions;
 using Microsoft.OData.Json;
 using Xunit;
@@ -72,6 +73,27 @@ namespace Microsoft.OData.Tests.Json
         public void QuotedAspNetDateTimeValueShouldBeReadAsStringInJsonLight()
         {
             this.CreateJsonLightReader("\"\\/Date(628318530718)\\/\"").ReadPrimitiveValue().Should().BeOfType<String>();
+        }
+
+        [Fact]
+        public void JsonReaderRawValueTest()
+        {
+            string jsonValue = "{ \"data\" : [123, \"abc\", 456], \"name\": \"hello789\" }";
+            JsonReader reader = new JsonReader(new StringReader(jsonValue), isIeee754Compatible: false);
+            StringBuilder sb = new StringBuilder();
+            reader.Read();
+            sb.Append(reader.RawValue.ToString());
+            Assert.True(sb.Length > 0);
+            reader.Read();
+            sb.Append(reader.RawValue.ToString());
+            Assert.Equal("{\"data\":", sb.ToString());
+            while (reader.Read())
+            {
+                Assert.True(reader.RawValue.Length > 0);
+                sb.Append(reader.RawValue.ToString());
+            }
+
+            Assert.Equal("{\"data\":[123,\"abc\",456],\"name\":\"hello789\"}", sb.ToString());
         }
 
         private JsonReader CreateJsonLightReader(string jsonValue)

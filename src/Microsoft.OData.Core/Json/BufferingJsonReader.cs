@@ -9,9 +9,8 @@ namespace Microsoft.OData.Json
     #region Namespaces
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
+    using System.Text;
     using Microsoft.OData.JsonLight;
-
     #endregion Namespaces
 
     /// <summary>
@@ -112,7 +111,7 @@ namespace Microsoft.OData.Json
         /// Depending on whether buffering is on or off this will return the node raw value of the last
         /// buffered read or the node raw value of the last unbuffered read.
         /// </remarks>
-        public virtual string RawValue
+        public virtual StringBuilder RawValue
         {
             get
             {
@@ -510,6 +509,7 @@ namespace Microsoft.OData.Json
         /// <returns>true if an <see cref="ODataError"/> instance that was read; otherwise false.</returns>
         private bool TryReadInStreamErrorPropertyValue(out ODataError error)
         {
+            Debug.Assert(this.IsBuffering, "this.IsBuffering");
             Debug.Assert(this.parsingInStreamError, "this.parsingInStreamError");
             this.AssertBuffering();
 
@@ -1007,7 +1007,7 @@ namespace Microsoft.OData.Json
             private readonly JsonNodeType nodeType;
 
             /// <summary>The Json raw value of the node.</summary>
-            private readonly string nodeRawValue;
+            private readonly StringBuilder nodeRawValue;
 
             /// <summary>The value of the node.</summary>
             private readonly object nodeValue;
@@ -1018,7 +1018,7 @@ namespace Microsoft.OData.Json
             /// <param name="nodeType">The type of the node read.</param>
             /// <param name="value">The value of the node.</param>
             /// <param name="rawValue">The Json raw string or char of the node.</param>
-            internal BufferedNode(JsonNodeType nodeType, object value, string rawValue)
+            internal BufferedNode(JsonNodeType nodeType, object value, StringBuilder rawValue)
             {
                 this.nodeType = nodeType;
                 this.nodeRawValue = rawValue;
@@ -1041,7 +1041,7 @@ namespace Microsoft.OData.Json
             /// <summary>
             /// The raw value (string or char) of the node.
             /// </summary>
-            internal string RawValue
+            internal StringBuilder RawValue
             {
                 get
                 {

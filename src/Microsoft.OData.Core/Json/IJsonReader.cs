@@ -4,6 +4,8 @@
 // </copyright>
 //---------------------------------------------------------------------
 
+using System.Text;
+
 namespace Microsoft.OData.Json
 {
     /// <summary>
@@ -29,7 +31,7 @@ namespace Microsoft.OData.Json
         /// <summary>
         /// The underlying raw Json string.
         /// </summary>
-        string RawValue { get; }
+        StringBuilder RawValue { get; }
 
         /// <summary>
         /// The type of the last node read.

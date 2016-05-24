@@ -220,7 +220,7 @@ namespace Microsoft.OData.Json
 
                 if (jsonRawValueStringBuilder != null)
                 {
-                    jsonRawValueStringBuilder.Append(jsonReader.RawValue);
+                    jsonRawValueStringBuilder.Append(jsonReader.RawValue.ToString());
                 }
 
                 jsonReader.ReadNext();
@@ -232,6 +232,7 @@ namespace Microsoft.OData.Json
         {
             StringBuilder builder = new StringBuilder();
             jsonReader.SkipValue(builder);
+            Debug.Assert(builder.Length > 0, "builder.Length > 0");
             return new ODataUntypedValue()
             {
                 RawValue = builder.ToString(),
