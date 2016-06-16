@@ -95,18 +95,16 @@ namespace Microsoft.Test.OData.Tests.Client.AnnotationTests
                                 var complexValue = entry.Properties.Single(p => p.Name.Equals("HomeAddress")).Value as ODataComplexValue;
 
                                 // Verify Annotation on Complex Type
-                                ODataInstanceAnnotation annotationOnHomeAddress = complexValue.InstanceAnnotations.SingleOrDefault();
-                                Assert.AreEqual(string.Format("{0}.AddressType", TestModelNameSpace), annotationOnHomeAddress.Name);
+                                ODataInstanceAnnotation annotationOnHomeAddress = complexValue.InstanceAnnotations.SingleOrDefault(s => string.Equals(string.Format("{0}.AddressType", TestModelNameSpace), s.Name));
                                 Assert.AreEqual("Home", (annotationOnHomeAddress.Value as ODataPrimitiveValue).Value);
 
                                 // Verify Annotation on Property in Complex Type
-                                ODataInstanceAnnotation annotationOnCity = complexValue.Properties.SingleOrDefault(p => p.Name.Equals("City")).InstanceAnnotations.SingleOrDefault();
-                                Assert.AreEqual(string.Format("{0}.CityInfo", TestModelNameSpace), annotationOnCity.Name);
+                                ODataInstanceAnnotation annotationOnCity = complexValue.Properties.SingleOrDefault(p => p.Name.Equals("City")).InstanceAnnotations
+                                    .SingleOrDefault(s => string.Equals(string.Format("{0}.CityInfo", TestModelNameSpace), s.Name));
                                 Assert.AreEqual(2, (annotationOnCity.Value as ODataComplexValue).Properties.Count());
 
                                 // Verify Annotation on Property of Entity
-                                ODataInstanceAnnotation annotationonEmails = entry.Properties.SingleOrDefault(p => p.Name.Equals("Emails")).InstanceAnnotations.SingleOrDefault();
-                                Assert.AreEqual(string.Format("{0}.DisplayName", TestModelNameSpace), annotationonEmails.Name);
+                                ODataInstanceAnnotation annotationonEmails = entry.Properties.SingleOrDefault(p => p.Name.Equals("Emails")).InstanceAnnotations.SingleOrDefault(s => string.Equals(string.Format("{0}.DisplayName", TestModelNameSpace), s.Name));
                                 Assert.AreEqual("EmailAddresses", (annotationonEmails.Value as ODataPrimitiveValue).Value);
                             }
                         }
