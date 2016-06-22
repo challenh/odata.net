@@ -31,21 +31,17 @@ namespace Microsoft.OData
         /// </summary>
         /// <param name="annotationName">The name of the instance annotation.</param>
         /// <param name="annotationValue">The value of the instance annotation.</param>
-        /// <param name="isForUntypedProperty">If it is annotating an untyped property value.</param>
-        internal ODataInstanceAnnotation(string annotationName, ODataValue annotationValue, bool isForUntypedProperty)
+        /// <param name="isCustomAnnotation">If the name is not for built-in OData annotation.</param>
+        internal ODataInstanceAnnotation(string annotationName, ODataValue annotationValue, bool isCustomAnnotation)
         {
-            Debug.Assert((!isForUntypedProperty) ||
-                (string.Equals(ODataAnnotationNames.ODataType, annotationName, StringComparison.Ordinal) || annotationValue is ODataUntypedValue),
-                "when isForUntypedProperty is true: name is odata.type or value is ODataUntypedValue");
-            if (!isForUntypedProperty)
+            if (!isCustomAnnotation)
             {
                 ValidateName(annotationName);
-                ValidateValue(annotationValue);
             }
 
+            ValidateValue(annotationValue);
             this.Name = annotationName;
             this.Value = annotationValue;
-            this.IsForUntypedProperty = isForUntypedProperty;
         }
 
         /// <summary>
@@ -57,11 +53,6 @@ namespace Microsoft.OData
         /// Instance annotation value.
         /// </summary>
         public ODataValue Value { get; private set; }
-
-        /// <summary>
-        /// Gets if it is annotating an untyped property value.
-        /// </summary>
-        internal bool IsForUntypedProperty { get; set; }
 
         /// <summary>
         /// Validates that the given <paramref name="name"/> is a valid instance annotation name.
