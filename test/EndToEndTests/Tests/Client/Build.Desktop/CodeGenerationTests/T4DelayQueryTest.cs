@@ -26,6 +26,8 @@ namespace Microsoft.Test.OData.Tests.Client.CodeGenerationTests
         #region Lite Deserializer perf comparison
         // uncomment to run perf comparison test
         // [TestMethod]
+        // ##Client E2E Perf of FullDeserializer -> LiteDeserializer = 4295495 -> 3772255 saving 12.181133955458%##
+        // ##Client E2E Averagely Full Ticks = Lite Ticks x 1.14##
         public void CompareFullAndLiteDeserializers()
         {
             TestClientContext.MergeOption = MergeOption.OverwriteChanges;

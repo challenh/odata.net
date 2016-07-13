@@ -1359,7 +1359,7 @@ namespace Microsoft.OData.JsonLight
             if (this.jsonLightInputContext.ReadingResponse && this.CurrentResource != null)
             {
                 // If we have a projected nested resource info that was missing from the payload, report it now.
-                ODataJsonLightReaderNestedResourceInfo unprocessedNestedResourceInfo = this.CurrentResource.MetadataBuilder.GetNextUnprocessedNavigationLink();
+                ODataJsonLightReaderNestedResourceInfo unprocessedNestedResourceInfo = null; // this.CurrentResource.MetadataBuilder.GetNextUnprocessedNavigationLink();
                 if (unprocessedNestedResourceInfo != null)
                 {
                     this.CurrentResourceState.ProcessingMissingProjectedNestedResourceInfos = true;

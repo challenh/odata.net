@@ -24,6 +24,8 @@ namespace Microsoft.OData.Performance
 
         // uncomment it to run
         // [Benchmark]
+        // ##ODL Perf of FullDeserializer->LiteDeserializer = 1104165.25 -> 656457 saving 40.55%##
+        // ##ODL Averagely Full Ticks = Lite Ticks x 1.68##
         public void TestCompareFullAndLiteODataReaders()
         {
             var sb = new System.Text.StringBuilder();
