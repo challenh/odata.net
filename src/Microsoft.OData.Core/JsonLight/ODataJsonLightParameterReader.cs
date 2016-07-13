@@ -275,7 +275,7 @@ namespace Microsoft.OData.JsonLight
         private ODataReader CreateResourceReaderSynchronously(IEdmStructuredType expectedResourceType)
         {
             Debug.Assert(expectedResourceType != null, "expectedResourceType != null");
-            return new ODataJsonLightReader(this.jsonLightInputContext, null, expectedResourceType, false /*readingResourceSet*/, true /*readingParameter*/, false /*readingDelta*/, this /*IODataReaderListener*/);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this.jsonLightInputContext, null, expectedResourceType, false /*readingResourceSet*/, true /*readingParameter*/, false /*readingDelta*/, this /*IODataReaderListener*/);
         }
 
         /// <summary>
@@ -286,7 +286,7 @@ namespace Microsoft.OData.JsonLight
         private ODataReader CreateResourceSetReaderSynchronously(IEdmStructuredType expectedResourceType)
         {
             Debug.Assert(expectedResourceType != null, "expectedResourceType != null");
-            return new ODataJsonLightReader(this.jsonLightInputContext, null, expectedResourceType, true /*readingResourceSet*/, true /*readingParameter*/, false /*readingDelta*/, this /*IODataReaderListener*/);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this.jsonLightInputContext, null, expectedResourceType, true /*readingResourceSet*/, true /*readingParameter*/, false /*readingDelta*/, this /*IODataReaderListener*/);
         }
 
         /// <summary>

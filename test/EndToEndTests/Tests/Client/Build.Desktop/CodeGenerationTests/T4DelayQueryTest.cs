@@ -14,7 +14,7 @@ namespace Microsoft.Test.OData.Tests.Client.CodeGenerationTests
     using Microsoft.Test.OData.Services.TestServices.ODataWCFServiceReference;
     using Microsoft.Test.OData.Services.TestServices.ODataWCFServiceReferencePlus;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+    using System.IO;
     [TestClass]
     public class T4DelayQueryTest : ODataWCFServiceTestsBase<InMemoryEntities>
     {
@@ -23,11 +23,83 @@ namespace Microsoft.Test.OData.Tests.Client.CodeGenerationTests
         {
         }
 
+        #region Lite Deserializer perf comparison
+        // uncomment to run perf comparison test
+        // [TestMethod]
+        public void CompareFullAndLiteDeserializers()
+        {
+            TestClientContext.MergeOption = MergeOption.OverwriteChanges;
+
+            //Post a Product
+            var product = Product.CreateProduct(10001, "10001", "2", 2.0f, 2, true);
+            TestClientContext.AddToProducts(product);
+            TestClientContext.SaveChanges();
+
+            var content = new MemoryStream();
+            StreamWriter sw = new StreamWriter(content);
+            sw.AutoFlush = true;
+            Console.SetOut(sw);
+
+            // compare:
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("\r\nFullDeserializer, LiteDeserializer");
+            long sum1 = 0;
+            long sum2 = 0;
+            for (int i = 0; i < 280; i++)
+            {
+                // 1:
+                TestClientContext.MetadataEnablingLevel = Microsoft.OData.MetadataEnablingLevel.Full;
+                var milli = 0L;
+                List<Product> list1;
+                {
+                    var watch = System.Diagnostics.Stopwatch.StartNew();
+                    list1 = TestClientContext.Products.ToList();
+                    milli = watch.ElapsedTicks;
+                }
+
+                // 2:
+                TestClientContext.MetadataEnablingLevel = Microsoft.OData.MetadataEnablingLevel.Lite;
+                var milli2 = 0L;
+                List<Product> list2;
+                {
+                    var watch2 = System.Diagnostics.Stopwatch.StartNew();
+                    list2 = TestClientContext.Products.ToList();
+                    milli2 = watch2.ElapsedTicks;
+                }
+
+                Assert.AreEqual(list1.Count, list2.Count, "FullDeserializer & LiteDeserializer generated same results.");
+                if (i != 0)
+                {
+                    sb.AppendLine(milli + " , " + milli2);
+                    sum1 += milli;
+                    sum2 += milli2;
+                }
+            }
+
+            content.Position = 0;
+            var sr = new StreamReader(content);
+            var myStr = sr.ReadToEnd();
+            Assert.IsTrue(false,
+                string.Format("\r\n##Client E2E Perf of FullDeserializer -> LiteDeserializer = {0} -> {1} saving {2}%##\r\n", sum1, sum2, (double)(sum1 - sum2) * 100 / sum1)
+                + string.Format("##Client E2E Averagely Full Ticks = Lite Ticks x "
+                + ((double)sum1 / sum2).ToString(".00")
+                + "##")
+                + sb.ToString()
+                + (System.Diagnostics.Process.GetCurrentProcess().Id + ":" + System.Threading.Thread.CurrentThread.ManagedThreadId)
+                + ("@" + DateTime.Now.ToLongTimeString())
+                + myStr);
+
+            // a test result (May 10, 2016):
+            // Client E2E Perf of FullDeserializer -> LiteDeserializer = 4527956 -> 3369031 saving 25.59%
+        }
+
+        #endregion
+
         [TestMethod]
         public void DelayQueryOnEntitySet()
         {
             TestClientContext.MergeOption = MergeOption.OverwriteChanges;
-            
+
             //Post an Product
             var product = Product.CreateProduct(10001, "10001", "2", 2.0f, 2, true);
             TestClientContext.AddToProducts(product);

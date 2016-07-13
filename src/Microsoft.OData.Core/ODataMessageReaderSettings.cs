@@ -10,6 +10,15 @@ namespace Microsoft.OData
     using Microsoft.OData.Edm;
 
     /// <summary>
+    /// The metadata enabling level.
+    /// </summary>
+    public enum MetadataEnablingLevel
+    {
+        Full = 0,
+        Lite = 1,
+    }
+
+    /// <summary>
     /// Configuration settings for OData message readers.
     /// </summary>
     public sealed class ODataMessageReaderSettings
@@ -58,6 +67,11 @@ namespace Microsoft.OData
                 ThrowOnUndeclaredPropertyForNonOpenType = (validations & ValidationKinds.ThrowOnUndeclaredPropertyForNonOpenType) != 0;
             }
         }
+
+        /// <summary>
+        /// The metadata enabling level
+        /// </summary>
+        public MetadataEnablingLevel MetadataEnablingLevel { get; set; }
 
         /// <summary>
         /// Gets or sets the document base URI (used as base for all relative URIs). If this is set, it must be an absolute URI.
@@ -215,6 +229,7 @@ namespace Microsoft.OData
             this.ThrowOnDuplicatePropertyNames = other.ThrowOnDuplicatePropertyNames;
             this.ThrowIfTypeConflictsWithMetadata = other.ThrowIfTypeConflictsWithMetadata;
             this.ThrowOnUndeclaredPropertyForNonOpenType = other.ThrowOnUndeclaredPropertyForNonOpenType;
+            this.MetadataEnablingLevel = other.MetadataEnablingLevel;
         }
     }
 }

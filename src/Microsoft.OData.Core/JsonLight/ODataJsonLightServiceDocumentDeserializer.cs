@@ -338,7 +338,7 @@ namespace Microsoft.OData.JsonLight
 
             if (serviceDocumentElement != null)
             {
-                serviceDocumentElement.Url = this.ProcessUriFromPayload(url[0]);
+                serviceDocumentElement.Url = ProcessUriFromPayload(this.JsonLightInputContext, this.MetadataDocumentUri, url[0]);
                 serviceDocumentElement.Name = name[0];
                 serviceDocumentElement.Title = title[0];
             }

@@ -1945,7 +1945,7 @@ namespace Microsoft.OData.JsonLight
                     navigationSource = parentNavigationSource.FindNavigationTarget(nestedResourceInfo.NavigationProperty);
                 }
 
-                this.nestedResourceInfoReader = new ODataJsonLightReader(jsonLightInputContext, navigationSource, expectedResourceType, readingResourceSet, readingDelta: true);
+                this.nestedResourceInfoReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(jsonLightInputContext, navigationSource, expectedResourceType, readingResourceSet, readingDelta: true);
             }
 
             /// <summary>

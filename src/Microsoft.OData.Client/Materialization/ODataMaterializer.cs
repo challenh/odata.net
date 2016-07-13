@@ -366,7 +366,7 @@ namespace Microsoft.OData.Client.Materialization
         protected static ODataMessageReader CreateODataMessageReader(IODataResponseMessage responseMessage, ResponseInfo responseInfo, ref ODataPayloadKind payloadKind)
         {
             ODataMessageReaderSettings settings = responseInfo.ReadHelper.CreateSettings();
-
+            settings.MetadataEnablingLevel = responseInfo.Context.MetadataEnablingLevel;
             ODataMessageReader odataMessageReader = responseInfo.ReadHelper.CreateReader(responseMessage, settings);
 
             if (payloadKind == ODataPayloadKind.Unsupported)

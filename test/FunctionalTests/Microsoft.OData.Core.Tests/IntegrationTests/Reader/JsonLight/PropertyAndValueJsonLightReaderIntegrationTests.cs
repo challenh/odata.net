@@ -749,7 +749,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             EdmModel model = new EdmModel();
 
             EdmComplexType complexType = new EdmComplexType("NS", "Address");
-            complexType.AddStructuralProperty("CountriesOrRegions", new EdmCollectionTypeReference(new EdmCollectionType(EdmCoreModel.Instance.GetString(true))));
+            complexType.AddStructuralProperty("CountriesOrRegions", new EdmCollectionTypeReference(new EdmCollectionType(EdmCoreModel.Instance.GetString(false))));
             model.AddElement(complexType);
 
             EdmEntityType entityType = new EdmEntityType("NS", "Person");

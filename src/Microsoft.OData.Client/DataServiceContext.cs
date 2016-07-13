@@ -623,6 +623,11 @@ namespace Microsoft.OData.Client
         /// </summary>
         public bool ODataSimplified { get; set; }
 
+        /// <summary>
+        /// The metadata validation level.
+        /// </summary>
+        public MetadataEnablingLevel MetadataEnablingLevel { get; set; }
+
         /// <summary>Gets or sets whether to support undeclared properties.</summary>
         /// <returns>UndeclaredPropertyBehavior.</returns>
         internal UndeclaredPropertyBehavior UndeclaredPropertyBehavior

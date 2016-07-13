@@ -55,7 +55,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Reader.JsonLight
             enumFlagsType.AddMember("Green", new EdmEnumMemberValue(2));
             enumFlagsType.AddMember("Blue", new EdmEnumMemberValue(4));
             tmpModel.AddElement(enumFlagsType);
-
+ 
             this.entityType = new EdmEntityType("NS", "MyEntityType", isAbstract: false, isOpen: true, baseType: null);
             EdmStructuralProperty floatId = new EdmStructuralProperty(this.entityType, "FloatId", EdmCoreModel.Instance.GetSingle(false));
             this.entityType.AddKeys(floatId);

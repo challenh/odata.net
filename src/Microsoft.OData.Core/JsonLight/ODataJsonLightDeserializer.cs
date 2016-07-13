@@ -178,7 +178,7 @@ namespace Microsoft.OData.JsonLight
         /// <summary>
         /// Gets the metadata document Uri from the contextUriParseResult.
         /// </summary>
-        private Uri MetadataDocumentUri
+        internal Uri MetadataDocumentUri
         {
             get
             {
@@ -367,7 +367,7 @@ namespace Microsoft.OData.JsonLight
                 return null;
             }
 
-            return this.ReadingResponse ? this.ProcessUriFromPayload(stringValue) : new Uri(stringValue, UriKind.RelativeOrAbsolute);
+            return this.ReadingResponse ? ProcessUriFromPayload(this.jsonLightInputContext, this.MetadataDocumentUri, stringValue) : new Uri(stringValue, UriKind.RelativeOrAbsolute);
         }
 
         /// <summary>
@@ -378,22 +378,23 @@ namespace Microsoft.OData.JsonLight
         internal Uri ReadAndValidateAnnotationStringValueAsUri(string annotationName)
         {
             string stringValue = this.ReadAndValidateAnnotationStringValue(annotationName);
-            return this.ReadingResponse ? this.ProcessUriFromPayload(stringValue) : new Uri(stringValue, UriKind.RelativeOrAbsolute);
+            return this.ReadingResponse ? ProcessUriFromPayload(this.jsonLightInputContext, this.MetadataDocumentUri, stringValue) : new Uri(stringValue, UriKind.RelativeOrAbsolute);
         }
 
         /// <summary>
         /// Reads and validates a value from the json reader and processes it as a long.
         /// The input value could be string or number
         /// </summary>
+        /// <param name="inputContext">The ODataJsonLightInputContext.</param>
         /// <param name="annotationName">The name of the annotation being read.</param>
         /// <returns>The long that is read.</returns>
-        internal long ReadAndValidateAnnotationAsLongForIeee754Compatible(string annotationName)
+        internal static long ReadAndValidateAnnotationAsLongForIeee754Compatible(ODataJsonLightInputContext inputContext, string annotationName)
         {
-            object value = this.JsonReader.ReadPrimitiveValue();
+            object value = inputContext.JsonReader.ReadPrimitiveValue();
 
             ODataJsonLightReaderUtils.ValidateAnnotationValue(value, annotationName);
 
-            if ((value is string) ^ this.JsonReader.IsIeee754Compatible)
+            if ((value is string) ^ inputContext.JsonReader.IsIeee754Compatible)
             {
                 throw new ODataException(Strings.ODataJsonReaderUtils_ConflictBetweenInputFormatAndParameter(Metadata.EdmConstants.EdmInt64TypeName));
             }
@@ -401,10 +402,10 @@ namespace Microsoft.OData.JsonLight
             return (long)ODataJsonLightReaderUtils.ConvertValue(
                     value,
                     EdmCoreModel.Instance.GetInt64(false),
-                    this.MessageReaderSettings,
+                    inputContext.MessageReaderSettings,
                     /*validateNullValue*/ true,
                     annotationName,
-                    this.JsonLightInputContext.PayloadValueConverter);
+                    inputContext.PayloadValueConverter);
         }
 
         /// <summary>
@@ -412,15 +413,14 @@ namespace Microsoft.OData.JsonLight
         /// </summary>
         /// <param name="uriFromPayload">The URI string from the payload to process.</param>
         /// <returns>An absolute URI to report.</returns>
-        internal Uri ProcessUriFromPayload(string uriFromPayload)
+        internal static Uri ProcessUriFromPayload(ODataJsonLightInputContext JsonLightInputContext, Uri metadataDocumentUri, string uriFromPayload)
         {
             Debug.Assert(uriFromPayload != null, "uriFromPayload != null");
 
             Uri uri = new Uri(uriFromPayload, UriKind.RelativeOrAbsolute);
 
             // Try to resolve the URI using a custom URL resolver first.
-            Uri metadataDocumentUri = this.MetadataDocumentUri;
-            Uri resolvedUri = this.JsonLightInputContext.ResolveUri(metadataDocumentUri, uri);
+            Uri resolvedUri = JsonLightInputContext.ResolveUri(metadataDocumentUri, uri);
             if (resolvedUri != null)
             {
                 return resolvedUri;
@@ -560,11 +560,12 @@ namespace Microsoft.OData.JsonLight
         /// <summary>
         /// Completes the simplified OData annotation name with "odata.".
         /// </summary>
+        /// <param name="inputContext">The ODataJsonLightInputContext.</param>
         /// <param name="annotationName">The annotation name to be completed.</param>
         /// <returns>The complete OData annotation name.</returns>
-        protected string CompleteSimplifiedODataAnnotation(string annotationName)
+        internal static string CompleteSimplifiedODataAnnotation(ODataJsonLightInputContext inputContext, string annotationName)
         {
-            if (this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingODataAnnotationWithoutPrefix &&
+            if (inputContext.ODataSimplifiedOptions.EnableReadingODataAnnotationWithoutPrefix &&
                 annotationName.IndexOf('.') == -1)
             {
                 annotationName = JsonLightConstants.ODataAnnotationNamespacePrefix + annotationName;
@@ -699,7 +700,7 @@ namespace Microsoft.OData.JsonLight
                 if (!isPropertyAnnotation)
                 {
                     isInstanceAnnotation = IsInstanceAnnotation(nameFromReader);
-                    propertyNameFromReader = isInstanceAnnotation ? this.CompleteSimplifiedODataAnnotation(nameFromReader.Substring(1)) : nameFromReader;
+                    propertyNameFromReader = isInstanceAnnotation ? CompleteSimplifiedODataAnnotation(this.jsonLightInputContext, nameFromReader.Substring(1)) : nameFromReader;
                 }
 
                 // If parsedPropertyName is set and is different from the property name the reader is currently on,
@@ -717,7 +718,7 @@ namespace Microsoft.OData.JsonLight
                 object annotationValue = null;
                 if (isPropertyAnnotation)
                 {
-                    annotationNameFromReader = this.CompleteSimplifiedODataAnnotation(annotationNameFromReader);
+                    annotationNameFromReader = CompleteSimplifiedODataAnnotation(this.jsonLightInputContext, annotationNameFromReader);
 
                     // If this is a unknown odata annotation targeting a property, we skip over it. See remark on the method SkippedOverUnknownODataAnnotation() for detailed explaination.
                     // Note that we don't skip over unknown odata annotations targeting another annotation. We don't allow annotations (except odata.type) targeting other annotations,

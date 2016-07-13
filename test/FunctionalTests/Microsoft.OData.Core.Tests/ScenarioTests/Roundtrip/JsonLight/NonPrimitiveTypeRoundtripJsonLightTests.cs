@@ -218,15 +218,47 @@ namespace Microsoft.OData.Tests.ScenarioTests.Roundtrip.JsonLight
                 MessageStream = stream
             };
 
+            ODataComplexValue complex1 = null;
+            ODataComplexValue complex2 = null;
             using (var inputContext = new ODataJsonLightInputContext(messageInfoForReader, new ODataMessageReaderSettings()))
+            //=======
+            //            using (ODataJsonLightInputContext inputContext = new ODataJsonLightInputContext(
+            //                ODataFormat.Json,
+            //                stream,
+            //                JsonLightUtils.JsonLightStreamingMediaType,
+            //                Encoding.UTF8,
+            //                new ODataMessageReaderSettings(),
+            //                /*readingResponse*/ false,
+            //                /*synchronous*/ true,
+            //                model,
+            //                /*urlResolver*/ null,
+            //                /*container*/ null))
+            //>>>>>>> Expose .MetadataEnablingLevel setting on client DataServiceContext,and test Client E2E Perf of FullDeserializer -> LiteDeserializer: ~25% time saving.
             {
-                var jsonLightReader = new ODataJsonLightReader(inputContext, this.studentSet, this.studentInfo, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, this.studentSet, this.studentInfo, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.ResourceEnd)
                     {
                         ODataResource entryOut = jsonLightReader.Item as ODataResource;
-                        actualValue = entryOut.Properties.Single(p => p.Name == propertyName).ODataValue;
+                        if (complex1 == null)
+                        {
+                            complex1 = new ODataComplexValue()
+                            {
+                                TypeName = entryOut.TypeName,
+                                Properties = entryOut.Properties,
+                            };
+
+                            actualValue = entryOut.Properties.Single(p => p.Name == propertyName).ODataValue;
+                        }
+                        else if (complex2 == null)
+                        {
+                            complex2 = new ODataComplexValue()
+                            {
+                                TypeName = entryOut.TypeName,
+                                Properties = entryOut.Properties,
+                            };
+                        }
                     }
                 }
             }
@@ -236,7 +268,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Roundtrip.JsonLight
 
         private void VerifyComplexRoundtrip(string propertyName, params ODataResource[] values)
         {
-            var nestedResourceInfo = new ODataNestedResourceInfo() { Name = propertyName, IsCollection = false};
+            var nestedResourceInfo = new ODataNestedResourceInfo() { Name = propertyName, IsCollection = false };
             var entry = new ODataResource() { TypeName = "NS.Student" };
 
             ODataMessageWriterSettings settings = new ODataMessageWriterSettings { Version = ODataVersion.V4 };

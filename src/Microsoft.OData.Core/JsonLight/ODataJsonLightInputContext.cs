@@ -313,6 +313,16 @@ namespace Microsoft.OData.JsonLight
         public override ODataReader CreateUriParameterResourceReader(IEdmNavigationSource navigationSource, IEdmStructuredType expectedResourceType)
         {
             return this.CreateResourceReader(navigationSource, expectedResourceType);
+            // return ODataJsonLiteReaderUtils.CreateODataReader(this, navigationSource, expectedResourceType, false, true, false, null);
+            // return new ODataJsonLightFullReader(
+            //    this,
+            //    navigationSource,
+            //    expectedResourceType,
+            //    false, //readingResourceSet,
+            //    false, // readingParameter,
+            //    false, // readingDelta,
+            //    null // listener
+            //    );
         }
 
 #if PORTABLELIB
@@ -686,7 +696,7 @@ namespace Microsoft.OData.JsonLight
         /// <returns>The newly created <see cref="ODataReader"/>.</returns>
         private ODataReader CreateResourceSetReaderImplementation(IEdmEntitySetBase entitySet, IEdmStructuredType expectedResourceType, bool readingParameter)
         {
-            return new ODataJsonLightReader(this, entitySet, expectedResourceType, true, readingParameter);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this, entitySet, expectedResourceType, true, readingParameter);
         }
 
         /// <summary>
@@ -708,7 +718,7 @@ namespace Microsoft.OData.JsonLight
         /// <returns>The newly created <see cref="ODataReader"/>.</returns>
         private ODataReader CreateResourceReaderImplementation(IEdmNavigationSource navigationSource, IEdmStructuredType expectedBaseResourceType)
         {
-            return new ODataJsonLightReader(this, navigationSource, expectedBaseResourceType, false);
+            return /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(this, navigationSource, expectedBaseResourceType, false);
         }
 
         /// <summary>

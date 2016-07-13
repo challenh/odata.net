@@ -82,10 +82,11 @@ namespace Microsoft.OData.Performance
         /// <param name="messageKind">Is request or response</param>
         /// <param name="isFullValidation">Whether turn on FullValidation</param>
         /// <returns>Instance of ODataMessageReader</returns>
-        public static ODataMessageReader CreateMessageReader(Stream messageStream, IEdmModel model, ODataMessageKind messageKind, bool isFullValidation)
+        public static ODataMessageReader CreateMessageReader(Stream messageStream, IEdmModel model, ODataMessageKind messageKind, bool isFullValidation, MetadataEnablingLevel metadataEnablingLevel = MetadataEnablingLevel.Lite)
         {
             var settings = CreateMessageReaderSettings(isFullValidation);
-
+            settings.Validations ^= ValidationKinds.ThrowOnDuplicatePropertyNames;
+            settings.MetadataEnablingLevel = metadataEnablingLevel;
             if (messageKind == ODataMessageKind.Request)
             {
                 var message = new StreamBasedRequestMessage(messageStream);

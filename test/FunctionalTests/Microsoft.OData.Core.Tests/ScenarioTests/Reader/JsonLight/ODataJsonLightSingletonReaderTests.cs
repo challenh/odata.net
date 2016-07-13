@@ -411,7 +411,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             {
                 inputContext.Container.GetRequiredService<ODataSimplifiedOptions>()
                     .EnableReadingODataAnnotationWithoutPrefix = odataSimplified;
-                var jsonLightReader = new ODataJsonLightReader(inputContext, singleton, webType, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, singleton, webType, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.ResourceEnd)
@@ -437,7 +437,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             using (var inputContext = new ODataJsonLightInputContext(
                 new StringReader(payload), messageInfo, new ODataMessageReaderSettings()))
             {
-                var jsonLightReader = new ODataJsonLightReader(inputContext, singleton, webType, /*readingFeed*/ false);
+                var jsonLightReader = /*new ODataJsonLightReader*/ ODataJsonLiteReaderUtils.CreateODataReader(inputContext, singleton, webType, /*readingFeed*/ false);
                 while (jsonLightReader.Read())
                 {
                     if (jsonLightReader.State == ODataReaderState.NestedResourceInfoEnd)

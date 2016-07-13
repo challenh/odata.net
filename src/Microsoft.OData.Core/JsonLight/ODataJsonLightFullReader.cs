@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------
-// <copyright file="ODataJsonLightReader.cs" company="Microsoft">
+// <copyright file="ODataJsonLightFullReader.cs" company="Microsoft">
 //      Copyright (C) Microsoft Corporation. All rights reserved. See License.txt in the project root for license information.
 // </copyright>
 //---------------------------------------------------------------------
@@ -24,7 +24,7 @@ namespace Microsoft.OData.JsonLight
     /// <summary>
     /// OData reader for the JsonLight format.
     /// </summary>
-    internal sealed class ODataJsonLightReader : ODataReaderCoreAsync
+    internal sealed class ODataJsonLightFullReader : ODataReaderCoreAsync
     {
         /// <summary>The input to read the payload from.</summary>
         private readonly ODataJsonLightInputContext jsonLightInputContext;
@@ -48,7 +48,7 @@ namespace Microsoft.OData.JsonLight
         /// <param name="readingParameter">true if the reader is created for reading a parameter; false otherwise.</param>
         /// <param name="readingDelta">true if the reader is created for reading expanded navigation property in delta response; false otherwise.</param>
         /// <param name="listener">If not null, the Json reader will notify the implementer of the interface of relevant state changes in the Json reader.</param>
-        internal ODataJsonLightReader(
+        internal ODataJsonLightFullReader(
             ODataJsonLightInputContext jsonLightInputContext,
             IEdmNavigationSource navigationSource,
             IEdmStructuredType expectedResourceType,
@@ -1127,7 +1127,10 @@ namespace Microsoft.OData.JsonLight
                 string contextUriStr = this.jsonLightResourceDeserializer.ReadContextUriAnnotation(ODataPayloadKind.Resource, propertyAndAnnotationCollector, false);
                 if (contextUriStr != null)
                 {
-                    contextUriStr = UriUtils.UriToString(this.jsonLightResourceDeserializer.ProcessUriFromPayload(contextUriStr));
+                    contextUriStr = UriUtils.UriToString(ODataJsonLightResourceDeserializer.ProcessUriFromPayload(
+                        this.jsonLightResourceDeserializer.JsonLightInputContext,
+                        this.jsonLightResourceDeserializer.MetadataDocumentUri,
+                        contextUriStr));
                     var parseResult = ODataJsonLightContextUriParser.Parse(
                             this.jsonLightResourceDeserializer.Model,
                             contextUriStr,
@@ -1148,6 +1151,11 @@ namespace Microsoft.OData.JsonLight
             this.jsonLightResourceDeserializer.ReadResourceTypeName(this.CurrentResourceState);
 
             // Resolve the type name
+            // Debug.Assert(
+            //    this.CurrentNavigationSource != null || this.readingParameter
+            //    || (this.CurrentNavigationSource == null
+            //    && (this.CurrentScope.ResourceType == null || this.CurrentScope.ResourceType.IsODataComplexTypeKind())),
+            //    "We must always have an expected navigation source for each resource (since we can't deduce that from the type name).");
             this.ApplyResourceTypeNameFromPayload(this.CurrentResource.TypeName);
 
             // Validate type with resource set validator if available
@@ -1289,8 +1297,7 @@ namespace Microsoft.OData.JsonLight
                 nestedResourceInfo.MetadataBuilder = entityMetadataBuilder;
             }
 
-            Debug.Assert(this.CurrentNavigationSource != null || this.readingParameter || this.CurrentNavigationSource == null && this.CurrentScope.ResourceType.IsODataComplexTypeKind(), "Json requires an navigation source when not reading parameter.");
-
+            // Debug.Assert(this.CurrentNavigationSource != null || this.readingParameter || this.CurrentNavigationSource == null && this.CurrentScope.ResourceType.IsODataComplexTypeKind(), "Json requires an navigation source when not reading parameter.");
             IEdmNavigationProperty navigationProperty = readerNestedResourceInfo.NavigationProperty;
             IEdmNavigationSource navigationSource = this.CurrentNavigationSource == null || navigationProperty == null
                 ? null : this.CurrentNavigationSource.FindNavigationTarget(navigationProperty);

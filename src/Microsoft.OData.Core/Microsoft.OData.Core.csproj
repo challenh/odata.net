@@ -64,6 +64,8 @@
     <Compile Include="PropertyValueTypeInfo.cs" />
     <Compile Include="ValidationKinds.cs" />
     <Compile Include="ReaderValidator.cs" />
+    <Compile Include="ODataJsonLiteReaderUtils.cs" />
+    <Compile Include="ODataJsonLightReader.cs" />
     <Compile Include="ServiceLifetime.cs" />
     <Compile Include="IContainerBuilder.cs" />
     <Compile Include="Metadata\ODataAtomErrorDeserializer.cs" />
@@ -154,7 +156,7 @@
     <Compile Include="JsonLight\ODataJsonLightPayloadKindDetectionDeserializer.cs" />
     <Compile Include="JsonLight\ODataJsonLightPropertyAndValueDeserializer.cs" />
     <Compile Include="JsonLight\ODataJsonLightPropertySerializer.cs" />
-    <Compile Include="JsonLight\ODataJsonLightReader.cs" />
+    <Compile Include="JsonLight\ODataJsonLightFullReader.cs" />
     <Compile Include="JsonLight\ODataJsonLightReaderNestedResourceInfo.cs" />
     <Compile Include="JsonLight\ODataJsonLightReaderUtils.cs" />
     <Compile Include="JsonLight\ODataJsonLightSerializer.cs" />

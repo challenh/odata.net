@@ -454,7 +454,7 @@ namespace Microsoft.OData.JsonLight
                     return this.ReadAndValidateAnnotationStringValueAsUri(propertyAnnotationName);
 
                 case ODataAnnotationNames.ODataCount:              // odata.count
-                    return this.ReadAndValidateAnnotationAsLongForIeee754Compatible(propertyAnnotationName);
+                    return ReadAndValidateAnnotationAsLongForIeee754Compatible(this.JsonLightInputContext, propertyAnnotationName);
 
                 case ODataAnnotationNames.ODataMediaETag:          // odata.mediaEtag
                 case ODataAnnotationNames.ODataMediaContentType:   // odata.mediaContentType
@@ -673,7 +673,7 @@ namespace Microsoft.OData.JsonLight
             switch (annotationName)
             {
                 case ODataAnnotationNames.ODataCount:
-                    resourceSet.Count = this.ReadAndValidateAnnotationAsLongForIeee754Compatible(ODataAnnotationNames.ODataCount);
+                    resourceSet.Count = ReadAndValidateAnnotationAsLongForIeee754Compatible(this.JsonLightInputContext, ODataAnnotationNames.ODataCount);
                     break;
 
                 case ODataAnnotationNames.ODataNextLink:
@@ -869,7 +869,7 @@ namespace Microsoft.OData.JsonLight
                 // Read over the property name.
                 this.JsonReader.Read();
 
-                switch (this.CompleteSimplifiedODataAnnotation(annotationName))
+                switch (CompleteSimplifiedODataAnnotation(this.JsonLightInputContext, annotationName))
                 {
                     case ODataAnnotationNames.ODataNextLink:
                         if (resourceSet.NextPageLink != null)
@@ -888,7 +888,7 @@ namespace Microsoft.OData.JsonLight
                         }
 
                         // Read the property value.
-                        resourceSet.Count = this.ReadAndValidateAnnotationAsLongForIeee754Compatible(ODataAnnotationNames.ODataCount);
+                        resourceSet.Count = ReadAndValidateAnnotationAsLongForIeee754Compatible(this.JsonLightInputContext, ODataAnnotationNames.ODataCount);
                         break;
 
                     case ODataAnnotationNames.ODataDeltaLink:   // Delta links are not supported on expanded resource sets.
@@ -1485,7 +1485,7 @@ namespace Microsoft.OData.JsonLight
 
                         string targetString = this.JsonReader.ReadStringValue(JsonConstants.ODataOperationTargetName);
                         ODataJsonLightValidationUtils.ValidateOperationPropertyValueIsNotNull(targetString, operationPropertyName, metadataReferencePropertyName);
-                        operation.Target = this.ProcessUriFromPayload(targetString);
+                        operation.Target = ProcessUriFromPayload(this.JsonLightInputContext, this.MetadataDocumentUri, targetString);
                         break;
 
                     default:
@@ -1730,7 +1730,10 @@ namespace Microsoft.OData.JsonLight
             /// <returns>An absolute URI to report.</returns>
             public Uri ProcessUriFromPayload(string uriFromPayload)
             {
-                return this.jsonLightResourceDeserializer.ProcessUriFromPayload(uriFromPayload);
+                return ODataJsonLightResourceDeserializer.ProcessUriFromPayload(
+                    this.jsonLightResourceDeserializer.JsonLightInputContext,
+                    this.jsonLightResourceDeserializer.MetadataDocumentUri,
+                    uriFromPayload);
             }
 
             /// <summary>

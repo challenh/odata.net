@@ -293,7 +293,7 @@ namespace Microsoft.OData.Json
             }
         }
 
-        internal static ODataValue ReadAsUntypedOrNullValue(this IJsonReader jsonReader)
+        internal static ODataUntypedValue ReadAsUntypedOrNullValue(this IJsonReader jsonReader)
         {
             StringBuilder builder = new StringBuilder();
             jsonReader.SkipValue(builder);

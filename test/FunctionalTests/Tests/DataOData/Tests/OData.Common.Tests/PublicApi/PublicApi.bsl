@@ -3737,6 +3737,11 @@ public enum Microsoft.OData.DeltaDeletedEntryReason : int {
 	Deleted = 0
 }
 
+public enum Microsoft.OData.MetadataEnablingLevel : int {
+	Full = 0
+	Lite = 1
+}
+
 public enum Microsoft.OData.ODataBatchReaderState : int {
 	ChangesetEnd = 3
 	ChangesetStart = 2
@@ -4720,6 +4725,7 @@ public sealed class Microsoft.OData.ODataMessageReaderSettings {
 	bool EnablePrimitiveTypeConversion  { public get; public set; }
 	Microsoft.OData.ODataVersion MaxProtocolVersion  { public get; public set; }
 	Microsoft.OData.ODataMessageQuotas MessageQuotas  { public get; public set; }
+	Microsoft.OData.MetadataEnablingLevel MetadataEnablingLevel  { public get; public set; }
 	System.Func`2[[System.String],[System.Boolean]] ShouldIncludeAnnotation  { public get; public set; }
 	Microsoft.OData.ValidationKinds Validations  { public get; public set; }
 
@@ -6370,6 +6376,7 @@ public class Microsoft.OData.Client.DataServiceContext {
 	System.Collections.ObjectModel.ReadOnlyCollection`1[[Microsoft.OData.Client.LinkDescriptor]] Links  { public get; }
 	Microsoft.OData.Client.ODataProtocolVersion MaxProtocolVersion  { public get; }
 	Microsoft.OData.Client.MergeOption MergeOption  { public get; public set; }
+	Microsoft.OData.MetadataEnablingLevel MetadataEnablingLevel  { public get; public set; }
 	bool ODataSimplified  { public get; public set; }
 	System.Func`2[[System.String],[System.Uri]] ResolveEntitySet  { public get; public set; }
 	System.Func`2[[System.Type],[System.String]] ResolveName  { public get; public set; }
