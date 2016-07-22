@@ -35,6 +35,7 @@ namespace Microsoft.OData
             this.EnablePrimitiveTypeConversion = true;
             this.EnableMessageStreamDisposal = true;
             this.EnableCharactersCheck = false;
+            this.EnableAutoComputeNavigationLinks = false;
             this.MaxProtocolVersion = ODataConstants.ODataDefaultProtocolVersion;
             Validations = ValidationKinds.All;
             Validator = new ReaderValidator(this);
@@ -98,6 +99,11 @@ namespace Microsoft.OData
         /// Flag to control whether the reader should check for valid Xml characters or not.
         /// </summary>
         public bool EnableCharactersCheck { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to enable model projected navigation links which is not in payload
+        /// </summary>
+        public bool EnableAutoComputeNavigationLinks { get; set; }
 
         /// <summary>Gets or sets the maximum OData protocol version the reader should accept and understand.</summary>
         /// <returns>The maximum OData protocol version the reader should accept and understand.</returns>
@@ -208,6 +214,7 @@ namespace Microsoft.OData
             this.EnableMessageStreamDisposal = other.EnableMessageStreamDisposal;
             this.EnablePrimitiveTypeConversion = other.EnablePrimitiveTypeConversion;
             this.EnableCharactersCheck = other.EnableCharactersCheck;
+            this.EnableAutoComputeNavigationLinks = other.EnableAutoComputeNavigationLinks;
             this.messageQuotas = new ODataMessageQuotas(other.MessageQuotas);
             this.MaxProtocolVersion = other.MaxProtocolVersion;
             this.ShouldIncludeAnnotation = other.ShouldIncludeAnnotation;

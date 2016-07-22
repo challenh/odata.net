@@ -702,7 +702,11 @@ namespace Microsoft.Test.OData.Tests.Client.ContainmentTest
                 { "Accounts(101)?$select=AccountID&$expand=MyGiftCard($select=GiftCardID)", new int[] {2, 1}  }
             };
 
-            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings() { BaseUri = ServiceBaseUri };
+            ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings()
+            {
+                BaseUri = ServiceBaseUri,
+                EnableAutoComputeNavigationLinks = true
+            };
 
             foreach (var testCase in testCases)
             {
@@ -724,7 +728,7 @@ namespace Microsoft.Test.OData.Tests.Client.ContainmentTest
                             Stack<bool> isNavigations = new Stack<bool>();
                             while (reader.Read())
                             {
-                                switch(reader.State)
+                                switch (reader.State)
                                 {
                                     case ODataReaderState.ResourceStart:
                                         {
@@ -1197,37 +1201,37 @@ namespace Microsoft.Test.OData.Tests.Client.ContainmentTest
         [TestMethod]
         public void CreateContainedEntityFromODataClientUsingAddRelatedObject()
         {
-           
-                    TestClientContext.Format.UseJson(Model);
-             
-                // create an an account entity and a contained PI entity
-                Account newAccount = new Account()
-                {
-                    AccountID = 110,
-                    CountryRegion = "CN",
-                    AccountInfo = new AccountInfo()
-                    {
-                        FirstName = "New",
-                        LastName = "Guy"
-                    }
-                };
-                PaymentInstrument newPI = new PaymentInstrument()
-                {
-                    PaymentInstrumentID = 110901,
-                    FriendlyName = "110's first PI",
-                    CreatedDate = new DateTimeOffset(new DateTime(2012, 12, 10))
-                };
-                TestClientContext.AddToAccounts(newAccount);
-                TestClientContext.AddRelatedObject(newAccount, "MyPaymentInstruments", newPI);
-                TestClientContext.SaveChanges();
 
-                var queryable0 = TestClientContext.Accounts.Where(account => account.AccountID == 110);
-                Account accountResult = queryable0.Single();
-                Assert.AreEqual("Guy", accountResult.AccountInfo.LastName);
+            TestClientContext.Format.UseJson(Model);
 
-                var queryable1 = TestClientContext.CreateQuery<PaymentInstrument>("Accounts(110)/MyPaymentInstruments").Where(pi => pi.PaymentInstrumentID == 110901);
-                PaymentInstrument piResult = queryable1.Single();
-                Assert.AreEqual("110's first PI", piResult.FriendlyName);
+            // create an an account entity and a contained PI entity
+            Account newAccount = new Account()
+            {
+                AccountID = 110,
+                CountryRegion = "CN",
+                AccountInfo = new AccountInfo()
+                {
+                    FirstName = "New",
+                    LastName = "Guy"
+                }
+            };
+            PaymentInstrument newPI = new PaymentInstrument()
+            {
+                PaymentInstrumentID = 110901,
+                FriendlyName = "110's first PI",
+                CreatedDate = new DateTimeOffset(new DateTime(2012, 12, 10))
+            };
+            TestClientContext.AddToAccounts(newAccount);
+            TestClientContext.AddRelatedObject(newAccount, "MyPaymentInstruments", newPI);
+            TestClientContext.SaveChanges();
+
+            var queryable0 = TestClientContext.Accounts.Where(account => account.AccountID == 110);
+            Account accountResult = queryable0.Single();
+            Assert.AreEqual("Guy", accountResult.AccountInfo.LastName);
+
+            var queryable1 = TestClientContext.CreateQuery<PaymentInstrument>("Accounts(110)/MyPaymentInstruments").Where(pi => pi.PaymentInstrumentID == 110901);
+            PaymentInstrument piResult = queryable1.Single();
+            Assert.AreEqual("110's first PI", piResult.FriendlyName);
         }
 
         [TestMethod]

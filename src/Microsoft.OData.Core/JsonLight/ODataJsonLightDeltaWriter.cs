@@ -931,7 +931,8 @@ namespace Microsoft.OData.JsonLight
                     resourceScope.SelectedProperties,
                     /*writingResponse*/ true,
                     this.jsonLightOutputContext.ODataSimplifiedOptions.EnableWritingKeyAsSegment,
-                    this.jsonLightOutputContext.MessageWriterSettings.ODataUri);
+                    this.jsonLightOutputContext.MessageWriterSettings.ODataUri,
+                    this.jsonLightOutputContext.MessageWriterSettings.EnableAutoComputeNavigationLinks);
 
                 this.jsonLightOutputContext.MetadataLevel.InjectMetadataBuilder(resource, builder);
             }

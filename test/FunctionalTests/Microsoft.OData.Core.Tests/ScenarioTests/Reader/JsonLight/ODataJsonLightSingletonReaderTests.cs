@@ -120,7 +120,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
                 "\"Pages@odata.navigationLink\":\"http://odata.org/test/MySingleton/Pages\"," +
                 "\"Pages@odata.associationLink\":\"http://odata.org/test/MySingleton/Pages/$ref\"}";
 
-            this.ReadAndVerifySingletonNavigationLink(payload);
+            this.ReadAndVerifySingletonNavigationLink(payload, true);
         }
 
         [Fact]
@@ -130,8 +130,8 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
                 "\"@odata.context\":\"http://odata.org/test/$metadata#MySingleton\"," +
                 "\"Pages@odata.navigationLink\":\"MySingleton/Pages\"," +
                 "\"Pages@odata.associationLink\":\"MySingleton/Pages/$ref\"}";
-
-            this.ReadAndVerifySingletonNavigationLink(payload);
+            
+            this.ReadAndVerifySingletonNavigationLink(payload, true);
         }
 
         [Fact]
@@ -139,8 +139,8 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
         {
             const string payload = "{" +
                 "\"@odata.context\":\"http://odata.org/test/$metadata#MySingleton\"}";
-
-            this.ReadAndVerifySingletonNavigationLink(payload);
+            
+            this.ReadAndVerifySingletonNavigationLink(payload, true);
         }
 
         [Fact]
@@ -149,17 +149,19 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             const string payload = "{" +
                 "\"@odata.context\":\"http://odata.org/test/$metadata#MySingleton\"," +
                 "\"Pages@odata.navigationLink\":\"MySingleton/Pages\"}";
-
-            this.ReadAndVerifySingletonNavigationLink(payload);
+            
+            this.ReadAndVerifySingletonNavigationLink(payload, true);
         }
 
-        private void ReadAndVerifySingletonNavigationLink(string payload)
+        private void ReadAndVerifySingletonNavigationLink(string payload, bool enableAutoComputeNavigationLinks)
         {
             this.NavigationLinkTestSetting();
-            ODataNestedResourceInfo navigationLink = this.ReadSingletonNavigationLink(payload);
-
-            navigationLink.Name.Should().Be("Pages");
-            navigationLink.AssociationLinkUrl.Should().Be("http://odata.org/test/MySingleton/Pages/$ref");
+            ODataNestedResourceInfo navigationLink = this.ReadSingletonNavigationLink(payload, enableAutoComputeNavigationLinks);
+            if (enableAutoComputeNavigationLinks)
+            {
+                navigationLink.Name.Should().Be("Pages");
+                navigationLink.AssociationLinkUrl.Should().Be("http://odata.org/test/MySingleton/Pages/$ref");
+            }
         }
 
         [Fact]
@@ -171,7 +173,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
                 "\"Pages@odata.navigationLink\":\"Bla\"," +
                 "\"Pages@odata.associationLink\":\"BlaBlaBla\"}";
 
-            ODataNestedResourceInfo navigationLink = this.ReadSingletonNavigationLink(payload);
+            ODataNestedResourceInfo navigationLink = this.ReadSingletonNavigationLink(payload, true);
 
             navigationLink.Name.Should().Be("Pages");
             navigationLink.AssociationLinkUrl.Should().Be("http://odata.org/test/BlaBlaBla");
@@ -424,7 +426,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             return null;
         }
 
-        private ODataNestedResourceInfo ReadSingletonNavigationLink(string payload)
+        private ODataNestedResourceInfo ReadSingletonNavigationLink(string payload, bool enableAutoComputeNavigationLinks)
         {
             var messageInfo = new ODataMessageInfo
             {
@@ -435,7 +437,7 @@ namespace Microsoft.OData.Tests.ScenarioTests.Reader.JsonLight
             };
 
             using (var inputContext = new ODataJsonLightInputContext(
-                new StringReader(payload), messageInfo, new ODataMessageReaderSettings()))
+                new StringReader(payload), messageInfo, new ODataMessageReaderSettings() { EnableAutoComputeNavigationLinks = enableAutoComputeNavigationLinks }))
             {
                 var jsonLightReader = new ODataJsonLightReader(inputContext, singleton, webType, /*readingFeed*/ false);
                 while (jsonLightReader.Read())

@@ -43,8 +43,9 @@ namespace Microsoft.OData.Evaluation
         /// </summary>
         /// <param name="resourceState">Resource state to use as reference for information needed by the builder.</param>
         /// <param name="useKeyAsSegment">true if keys should go in seperate segments in auto-generated URIs, false if they should go in parentheses.</param>
+        /// <param name="enableAutoComputeNavigationLinks">Whether to process model projected navigation links.</param>
         /// <returns>An entity metadata builder.</returns>
-        ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState resourceState, bool useKeyAsSegment);
+        ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState resourceState, bool useKeyAsSegment, bool enableAutoComputeNavigationLinks);
 
         /// <summary>
         /// Gets the list of operations that are bindable to a type.
@@ -233,8 +234,9 @@ namespace Microsoft.OData.Evaluation
         /// </summary>
         /// <param name="resourceState">Resource state to use as reference for information needed by the builder.</param>
         /// <param name="useKeyAsSegment">true if keys should go in seperate segments in auto-generated URIs, false if they should go in parentheses.</param>
+        /// <param name="enableAutoComputeNavigationLinks">Whether to process model projected navigation links.</param>
         /// <returns>A resource metadata builder.</returns>
-        public ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState resourceState, bool useKeyAsSegment)
+        public ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState resourceState, bool useKeyAsSegment, bool enableAutoComputeNavigationLinks)
         {
             Debug.Assert(resourceState != null, "resource != null");
 
@@ -280,7 +282,7 @@ namespace Microsoft.OData.Evaluation
                         ODataConventionalUriBuilder uriBuilder = new ODataConventionalUriBuilder(this.ServiceBaseUri,
                             useKeyAsSegment ? ODataUrlKeyDelimiter.Slash : ODataUrlKeyDelimiter.Parentheses);
 
-                        resourceState.MetadataBuilder = new ODataConventionalResourceMetadataBuilder(resourceMetadataContext, this, uriBuilder);
+                        resourceState.MetadataBuilder = new ODataConventionalResourceMetadataBuilder(resourceMetadataContext, this, uriBuilder, enableAutoComputeNavigationLinks);
                     }
                     else
                     {

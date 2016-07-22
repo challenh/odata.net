@@ -58,9 +58,11 @@ namespace Microsoft.Test.OData.Tests.Client.WriteJsonPayloadTests
                     settings.BaseUri = this.ServiceUri;
 
                     settings.AutoComputePayloadMetadata = false;
+                    settings.EnableAutoComputeNavigationLinks = true;
                     string defaultModeResult = this.WriteAndVerifyOrderFeed(settings, mimeType, hasModel);
 
                     settings.AutoComputePayloadMetadata = true;
+                    settings.EnableAutoComputeNavigationLinks = true;
                     string autoComputeMetadataModeResult = this.WriteAndVerifyOrderFeed(settings, mimeType, hasModel);
 
                     // For Atom/VerboseJson, verify that the result is the same for AutoComputePayloadMetadata=true/false
@@ -162,7 +164,7 @@ namespace Microsoft.Test.OData.Tests.Client.WriteJsonPayloadTests
                     const string expectedClause = "CustomerId,Video,Orders,Logins,Logins(Username,SentMessages)";
                     var uriParser = new ODataUriParser(WritePayloadHelper.Model, WritePayloadHelper.ServiceUri, new Uri(this.ServiceUri, "Customer?$select=" + selectClause + "&$expand=" + expandClause));
                     var result = uriParser.ParseSelectAndExpand();
-                    var settings = new ODataMessageWriterSettings();
+                    var settings = new ODataMessageWriterSettings() { EnableAutoComputeNavigationLinks = true };
                     settings.ODataUri = new ODataUri() { ServiceRoot = this.ServiceUri, SelectAndExpand = result };
 
                     settings.BaseUri = this.ServiceUri;
@@ -312,7 +314,7 @@ namespace Microsoft.Test.OData.Tests.Client.WriteJsonPayloadTests
             {
                 foreach (var hasModel in this.hasModelFlagBools)
                 {
-                    var settings = new ODataMessageWriterSettings();
+                    var settings = new ODataMessageWriterSettings() { EnableAutoComputeNavigationLinks = true };
                     settings.ODataUri = new ODataUri() { ServiceRoot = this.ServiceUri };
                     settings.BaseUri = this.ServiceUri;
 
@@ -579,7 +581,7 @@ namespace Microsoft.Test.OData.Tests.Client.WriteJsonPayloadTests
             {
                 foreach (var hasModel in this.hasModelFlagBools)
                 {
-                    var settings = new ODataMessageWriterSettings();
+                    var settings = new ODataMessageWriterSettings() { EnableAutoComputeNavigationLinks = true };
                     settings.ODataUri = new ODataUri() { ServiceRoot = this.ServiceUri };
                     settings.BaseUri = this.ServiceUri;
 

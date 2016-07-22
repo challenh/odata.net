@@ -69,7 +69,8 @@ namespace Microsoft.OData.Tests.JsonLight
                 SelectedPropertiesNode.EntireSubtree,
                 /*isResponse*/ true,
                 /*keyAsSegment*/ false,
-                /*requestUri*/ null);
+                /*requestUri*/ null,
+                /*enableAutoComputeNavigationLinks*/ false);
 
             test.ShouldThrow<ODataException>().WithMessage(ODataErrorStrings.ODataOutputContext_MetadataDocumentUriMissing);
         }
@@ -85,7 +86,8 @@ namespace Microsoft.OData.Tests.JsonLight
                 SelectedPropertiesNode.EntireSubtree,
                 /*isResponse*/ true,
                 /*keyAsSegment*/ false,
-                /*requestUri*/ null).Should().BeAssignableTo<ODataConventionalResourceMetadataBuilder>();
+                /*requestUri*/ null,
+                false).Should().BeAssignableTo<ODataConventionalResourceMetadataBuilder>();
         }
 
         [Fact]

@@ -4739,6 +4739,7 @@ public sealed class Microsoft.OData.ODataMessageReaderSettings {
 
 	System.Uri BaseUri  { public get; public set; }
 	System.Func`3[[Microsoft.OData.Edm.IEdmType],[System.String],[Microsoft.OData.Edm.IEdmType]] ClientCustomTypeResolver  { public get; public set; }
+	bool EnableAutoComputeNavigationLinks  { public get; public set; }
 	bool EnableCharactersCheck  { public get; public set; }
 	bool EnableMessageStreamDisposal  { public get; public set; }
 	bool EnablePrimitiveTypeConversion  { public get; public set; }
@@ -4807,6 +4808,7 @@ public sealed class Microsoft.OData.ODataMessageWriterSettings {
 
 	bool AutoComputePayloadMetadata  { public get; public set; }
 	System.Uri BaseUri  { public get; public set; }
+	bool EnableAutoComputeNavigationLinks  { public get; public set; }
 	bool EnableCharactersCheck  { public get; public set; }
 	bool EnableMessageStreamDisposal  { public get; public set; }
 	string JsonPCallback  { public get; public set; }

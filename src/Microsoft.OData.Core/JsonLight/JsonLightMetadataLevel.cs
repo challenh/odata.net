@@ -101,6 +101,7 @@ namespace Microsoft.OData.JsonLight
         /// <param name="keyAsSegment">true if keys should go in separate segments in auto-generated URIs, false if they should go in parentheses.
         /// A null value means the user hasn't specified a preference and we should look for an annotation in the entity container, if available.</param>
         /// <param name="odataUri">The OData Uri.</param>
+        /// <param name="enableAutoComputeNavigationLinks">Whether to process model projected navigation links.</param>
         /// <returns>The created metadata builder.</returns>
         internal abstract ODataResourceMetadataBuilder CreateResourceMetadataBuilder(
             ODataResource resource,
@@ -110,7 +111,8 @@ namespace Microsoft.OData.JsonLight
             SelectedPropertiesNode selectedProperties,
             bool isResponse,
             bool keyAsSegment,
-            ODataUri odataUri);
+            ODataUri odataUri,
+            bool enableAutoComputeNavigationLinks);
 
         /// <summary>
         /// Injects the appropriate metadata builder based on the metadata level.

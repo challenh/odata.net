@@ -45,7 +45,8 @@ namespace Microsoft.OData.Tests.JsonLight
                 SelectedPropertiesNode.EntireSubtree,
                 /*isResponse*/ true,
                 /*keyAsSegment*/ false,
-                /*requestUri*/ null).Should().BeNull();
+                /*requestUri*/ null,
+                /*enableAutoComputeNavigationLinks*/ false).Should().BeNull();
         }
 
         [Fact]

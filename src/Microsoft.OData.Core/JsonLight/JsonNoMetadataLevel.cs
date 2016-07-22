@@ -58,6 +58,7 @@ namespace Microsoft.OData.JsonLight
         /// <param name="isResponse">true if the resource metadata builder to create should be for a response payload; false for a request.</param>
         /// <param name="keyAsSegment">true if keys should go in separate segments in auto-generated URIs, false if they should go in parentheses.</param>
         /// <param name="odataUri">The OData Uri.</param>
+        /// <param name="enableAutoComputeNavigationLinks">Whether to process model projected navigation links.</param>
         /// <returns>The created metadata builder.</returns>
         internal override ODataResourceMetadataBuilder CreateResourceMetadataBuilder(
             ODataResource resource,
@@ -67,7 +68,8 @@ namespace Microsoft.OData.JsonLight
             SelectedPropertiesNode selectedProperties,
             bool isResponse,
             bool keyAsSegment,
-            ODataUri odataUri)
+            ODataUri odataUri,
+            bool enableAutoComputeNavigationLinks)
         {
             return ODataResourceMetadataBuilder.Null;
         }

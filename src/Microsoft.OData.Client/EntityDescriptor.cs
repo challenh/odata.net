@@ -545,6 +545,7 @@ namespace Microsoft.OData.Client
         internal Uri GetResourceUri(UriResolver baseUriResolver, bool queryLink)
         {
             // If the entity was inserted using the AddRelatedObject API
+            // here better directly read navigation link from model instead of from model projected 'relatedEntityLinks'
             if (this.ParentEntityDescriptor != null)
             {
                 // This is the batch scenario, where the entity might not have been saved yet, and there is another operation

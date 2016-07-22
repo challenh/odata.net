@@ -47,6 +47,8 @@ namespace Microsoft.OData.Client
             settings.BaseUri = this.responseInfo.BaseUriResolver.BaseUriOrNull;
             settings.MaxProtocolVersion = CommonUtil.ConvertToODataVersion(this.responseInfo.MaxProtocolVersion);
 
+            // Client needs projected readlink/editlink etc for subsequent calls to server
+            settings.EnableAutoComputeNavigationLinks = true;
             if (!this.responseInfo.ThrowOnUndeclaredPropertyForNonOpenType)
             {
                 settings.Validations &= ~ValidationKinds.ThrowOnUndeclaredPropertyForNonOpenType;

@@ -2149,6 +2149,7 @@ namespace Microsoft.OData.Tests.IntegrationTests.Evaluation
             ODataMessageWriterSettings settings = new ODataMessageWriterSettings()
             {
                 AutoComputePayloadMetadata = autoComputePayloadMetadata,
+                EnableAutoComputeNavigationLinks = true,
             };
 
             var result = new ODataQueryOptionParser(edmModel, edmEntityType, edmEntitySet, new Dictionary<string, string> { { "$select", selectClause }, { "$expand", expandClause } }).ParseSelectAndExpand();

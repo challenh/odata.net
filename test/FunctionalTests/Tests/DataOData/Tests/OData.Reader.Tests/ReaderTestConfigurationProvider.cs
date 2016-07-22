@@ -218,7 +218,8 @@ namespace Microsoft.Test.Taupo.OData.Reader.Tests
 #endif
                         var settings = new ODataMessageReaderSettings
                         {
-                            EnableMessageStreamDisposal = limitedCombination.EnableMessageStreamDisposal
+                            EnableMessageStreamDisposal = limitedCombination.EnableMessageStreamDisposal,
+                            EnableAutoComputeNavigationLinks = true,
                         };
                         configurations.Add(new ReaderTestConfiguration(
                             format,

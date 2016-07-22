@@ -914,7 +914,8 @@ namespace Microsoft.OData.JsonLight
 
             ODataResourceMetadataBuilder builder =
                 this.MetadataContext.GetResourceMetadataBuilderForReader(resourceState,
-                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment);
+                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment,
+                    this.JsonLightInputContext.MessageReaderSettings.EnableAutoComputeNavigationLinks);
             mediaResource.SetMetadataBuilder(builder, /*propertyName*/ null);
             resource.MediaResource = mediaResource;
         }
@@ -1324,7 +1325,8 @@ namespace Microsoft.OData.JsonLight
 
             ODataResourceMetadataBuilder builder =
                 this.MetadataContext.GetResourceMetadataBuilderForReader(resourceState,
-                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment);
+                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment,
+                    this.JsonLightInputContext.MessageReaderSettings.EnableAutoComputeNavigationLinks);
 
             // Note that we set the metadata builder even when streamProperty is null, which is the case when the stream property is undeclared.
             // For undeclared stream properties, we will apply conventional metadata evaluation just as declared stream properties.
@@ -1516,7 +1518,8 @@ namespace Microsoft.OData.JsonLight
         {
             ODataResourceMetadataBuilder builder =
                 this.MetadataContext.GetResourceMetadataBuilderForReader(resourceState,
-                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment);
+                    this.JsonLightInputContext.ODataSimplifiedOptions.EnableReadingKeyAsSegment,
+                    enableAutoComputeNavigationLinks: true);
             operation.SetMetadataBuilder(builder, this.ContextUriParseResult.MetadataDocumentUri);
         }
 

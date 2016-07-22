@@ -35,7 +35,8 @@ namespace Microsoft.OData.Tests.Evaluation
                 null /*requestUri*/);
             IEdmEntitySet set = this.edmModel.EntityContainer.FindEntitySet("Products");
             ODataResource entry = TestUtils.CreateODataEntry(set, new EdmStructuredValue(new EdmEntityTypeReference(set.EntityType(), true), new IEdmPropertyValue[0]), set.EntityType());
-            Action action = () => context.GetResourceMetadataBuilderForReader(new TestJsonLightReaderEntryState { Resource = entry, SelectedProperties = SelectedPropertiesNode.EntireSubtree, NavigationSource = set }, false);
+            Action action = () => context.GetResourceMetadataBuilderForReader(new TestJsonLightReaderEntryState { Resource = entry, SelectedProperties = SelectedPropertiesNode.EntireSubtree, NavigationSource = set }, false,
+                enableAutoComputeNavigationLinks: true);
             action.ShouldThrow<ODataException>().WithMessage(Strings.ODataJsonLightResourceMetadataContext_MetadataAnnotationMustBeInPayload("odata.context"));
         }
 
@@ -51,7 +52,8 @@ namespace Microsoft.OData.Tests.Evaluation
                 null /*requestUri*/);
             IEdmEntitySet set = this.edmModel.EntityContainer.FindEntitySet("Products");
             ODataResource entry = TestUtils.CreateODataEntry(set, new EdmStructuredValue(new EdmEntityTypeReference(set.EntityType(), true), new IEdmPropertyValue[0]), set.EntityType());
-            Action action = () => context.GetResourceMetadataBuilderForReader(new TestJsonLightReaderEntryState { Resource = entry, SelectedProperties = new SelectedPropertiesNode("*"), NavigationSource = set }, false);
+            Action action = () => context.GetResourceMetadataBuilderForReader(new TestJsonLightReaderEntryState { Resource = entry, SelectedProperties = new SelectedPropertiesNode("*"), NavigationSource = set }, false,
+                enableAutoComputeNavigationLinks: true);
             action.ShouldNotThrow();
         }
 

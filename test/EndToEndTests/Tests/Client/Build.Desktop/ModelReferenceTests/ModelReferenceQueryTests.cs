@@ -371,7 +371,7 @@ namespace Microsoft.Test.OData.Tests.Client.ModelReferenceTests
             Dictionary<string, int[]> testCases = new Dictionary<string, int[]>()
             {
                 { "Trucks('Key1')?$select=Key,VehicleGPS&$expand=VehicleGPS", new int[] {2, 1} },
-                { "Trucks('Key1')?$expand=HeadUnit,VehicleGPS", new int[] {3, 4} },
+                { "Trucks('Key1')?$expand=HeadUnit,VehicleGPS", new int[] {3, 2} },
             };
 
             ODataMessageReaderSettings readerSettings = new ODataMessageReaderSettings() { BaseUri = ServiceBaseUri };

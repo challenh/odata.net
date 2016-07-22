@@ -111,7 +111,7 @@ namespace Microsoft.OData.Tests.Evaluation
                 },
             };
 
-            this.derivedMultiKeyMultiEtagMleConventionalEntityMetadataBuilder = new ODataConventionalResourceMetadataBuilder(derivedProductMleEntryMetadataContext, this.metadataContext, this.uriBuilder);
+            this.derivedMultiKeyMultiEtagMleConventionalEntityMetadataBuilder = new ODataConventionalResourceMetadataBuilder(derivedProductMleEntryMetadataContext, this.metadataContext, this.uriBuilder, true);
             this.derivedMultiKeyMultiEtagMleEntry.MetadataBuilder = this.derivedMultiKeyMultiEtagMleConventionalEntityMetadataBuilder;
 
             #endregion Derived, MultiKey, Multi ETag, MLE Entry

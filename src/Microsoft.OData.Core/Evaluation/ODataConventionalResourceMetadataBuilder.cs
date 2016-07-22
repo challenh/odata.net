@@ -33,6 +33,8 @@ namespace Microsoft.OData.Evaluation
         /// <summary>The metadata context.</summary>
         private readonly IODataMetadataContext metadataContext;
 
+        private readonly bool enableAutoComputeNavigationLinks;
+
         /// <summary>The list of navigation links that have been processed.</summary>
         private readonly HashSet<string> processedNestedResourceInfos;
 
@@ -82,7 +84,9 @@ namespace Microsoft.OData.Evaluation
         /// <param name="resourceMetadataContext">The context to answer basic metadata questions about the resource.</param>
         /// <param name="metadataContext">The metadata context.</param>
         /// <param name="uriBuilder">The uri builder to use.</param>
-        internal ODataConventionalResourceMetadataBuilder(IODataResourceMetadataContext resourceMetadataContext, IODataMetadataContext metadataContext, ODataUriBuilder uriBuilder)
+        /// <param name="enableAutoComputeNavigationLinks">Whether to process model projected navigation links.</param>
+        internal ODataConventionalResourceMetadataBuilder(IODataResourceMetadataContext resourceMetadataContext,
+            IODataMetadataContext metadataContext, ODataUriBuilder uriBuilder, bool enableAutoComputeNavigationLinks = false)
         {
             Debug.Assert(resourceMetadataContext != null, "resourceMetadataContext != null");
             Debug.Assert(metadataContext != null, "metadataContext != null");
@@ -91,7 +95,9 @@ namespace Microsoft.OData.Evaluation
             this.resourceMetadataContext = resourceMetadataContext;
             this.uriBuilder = uriBuilder;
             this.metadataContext = metadataContext;
-            this.processedNestedResourceInfos = new HashSet<string>(StringComparer.Ordinal);
+            this.enableAutoComputeNavigationLinks = enableAutoComputeNavigationLinks;
+            this.processedNestedResourceInfos =
+                enableAutoComputeNavigationLinks ? new HashSet<string>(StringComparer.Ordinal) : null;
             this.isResourceEnd = true;  // Keep default behavior
         }
 
@@ -352,9 +358,12 @@ namespace Microsoft.OData.Evaluation
         /// <param name="navigationPropertyName">The nested resource info we've already processed.</param>
         internal override void MarkNestedResourceInfoProcessed(string navigationPropertyName)
         {
-            Debug.Assert(!string.IsNullOrEmpty(navigationPropertyName), "!string.IsNullOrEmpty(navigationPropertyName)");
-            Debug.Assert(this.processedNestedResourceInfos != null, "this.processedNestedResourceInfos != null");
-            this.processedNestedResourceInfos.Add(navigationPropertyName);
+            if (this.enableAutoComputeNavigationLinks)
+            {
+                Debug.Assert(!string.IsNullOrEmpty(navigationPropertyName), "!string.IsNullOrEmpty(navigationPropertyName)");
+                Debug.Assert(this.processedNestedResourceInfos != null, "this.processedNestedResourceInfos != null");
+                this.processedNestedResourceInfos.Add(navigationPropertyName);
+            }
         }
 
         /// <summary>
@@ -364,18 +373,21 @@ namespace Microsoft.OData.Evaluation
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "A method for consistency with the rest of the API.")]
         internal override ODataJsonLightReaderNestedResourceInfo GetNextUnprocessedNavigationLink()
         {
-            if (this.unprocessedNestedResourceInfos == null)
+            if (this.enableAutoComputeNavigationLinks)
             {
-                Debug.Assert(this.resourceMetadataContext != null, "this.resourceMetadataContext != null");
-                this.unprocessedNestedResourceInfos = this.resourceMetadataContext.SelectedNavigationProperties
-                    .Where(p => !this.processedNestedResourceInfos.Contains(p.Name))
-                    .Select(ODataJsonLightReaderNestedResourceInfo.CreateProjectedNestedResourceInfo)
-                    .GetEnumerator();
-            }
+                if (this.unprocessedNestedResourceInfos == null)
+                {
+                    Debug.Assert(this.resourceMetadataContext != null, "this.resourceMetadataContext != null");
+                    this.unprocessedNestedResourceInfos = this.resourceMetadataContext.SelectedNavigationProperties
+                        .Where(p => !this.processedNestedResourceInfos.Contains(p.Name))
+                        .Select(ODataJsonLightReaderNestedResourceInfo.CreateProjectedNestedResourceInfo)
+                        .GetEnumerator();
+                }
 
-            if (this.unprocessedNestedResourceInfos.MoveNext())
-            {
-                return this.unprocessedNestedResourceInfos.Current;
+                if (this.unprocessedNestedResourceInfos.MoveNext())
+                {
+                    return this.unprocessedNestedResourceInfos.Current;
+                }
             }
 
             return null;

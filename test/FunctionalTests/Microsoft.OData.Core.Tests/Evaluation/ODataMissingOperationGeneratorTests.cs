@@ -180,7 +180,7 @@ namespace Microsoft.OData.Tests.Evaluation
             }
         }
 
-        public ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState entryState, bool useKeyAsSegment)
+        public ODataResourceMetadataBuilder GetResourceMetadataBuilderForReader(IODataJsonLightReaderResourceState entryState, bool useKeyAsSegment, bool enableAutoComputeNavigationLinks)
         {
             if (this.GetEntityMetadataBuilderFunc != null)
             {
